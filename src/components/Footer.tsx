@@ -126,14 +126,14 @@ export function Footer({ config = defaultConfig, topics = [] }: FooterProps) {
 
           {/* Categories */}
           <div className="col-span-1">
-            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-2">
               Categories
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-1.5">
               {topics.map((topic) => (
                 <li key={topic.slug}>
                   <Link
-                    className="text-sm text-gray-600 hover:text-gray-900"
+                    className="text-xs text-gray-600 hover:text-gray-900"
                     href={`/topic/${topic.slug}`}
                   >
                     {topic.title}
@@ -145,15 +145,15 @@ export function Footer({ config = defaultConfig, topics = [] }: FooterProps) {
 
           {/* Resources */}
           <div className="col-span-1">
-            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-2">
               {config.resources.title}
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-1.5">
               {config.resources.links.map((link) => (
                 <li key={link.link}>
                   <Link
                     href={link.link}
-                    className="text-base text-gray-600 hover:text-gray-900"
+                    className="text-xs text-gray-600 hover:text-gray-900"
                   >
                     {link.label}
                   </Link>
@@ -164,15 +164,15 @@ export function Footer({ config = defaultConfig, topics = [] }: FooterProps) {
 
           {/* Legal */}
           <div className="col-span-1">
-            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-4">
+            <h3 className="text-sm font-semibold text-gray-900 tracking-wider uppercase mb-2">
               {config.legal.title}
             </h3>
-            <ul className="space-y-4">
+            <ul className="space-y-1.5">
               {config.legal.links.map((link) => (
                 <li key={link.link}>
                   <Link
                     href={link.link}
-                    className="text-base text-gray-600 hover:text-gray-900"
+                    className="text-xs text-gray-600 hover:text-gray-900"
                   >
                     {link.label}
                   </Link>

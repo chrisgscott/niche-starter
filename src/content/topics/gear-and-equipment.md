@@ -8,6 +8,8 @@ theme:
 image:
   url: "https://images.unsplash.com/photo-1510127034890-ba27508e9f1c?auto=format&fit=crop&q=80"
   alt: "Professional photography equipment laid out on table"
+  credit: "Unsplash"
+keywords: ["photography gear", "camera equipment", "photography lenses", "lighting equipment", "camera accessories"]
 tags:
   - "Gear"
   - "Cameras"
@@ -18,4 +20,9 @@ links:
   related_articles: ["/articles/equipment-essentials"]
 schema:
   type: "Article"
+  datePublished: "2024-12-19"
+  dateModified: "2024-12-19"
+  author:
+    "@type": "Person"
+    name: "Photography Pro"
 ---

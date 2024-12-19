@@ -118,17 +118,44 @@ export function getContentMetadata(contentPath: string): ContentMetadata | null 
  * Get topic data from a topic slug
  */
 export function getTopicData(topicSlug: string) {
-  try {
-    const topicPath = path.join(process.cwd(), 'src/content/topics', `${topicSlug}.md`);
-    const topicContent = fs.readFileSync(topicPath, 'utf-8');
-    const { data } = matter(topicContent);
-    return {
-      title: data.title,
-      slug: topicSlug
-    };
-  } catch (error) {
-    console.error(`Error getting topic data for ${topicSlug}:`, error);
+  const filePath = path.join(process.cwd(), 'src/content/topics', `${topicSlug}.md`);
+  
+  if (!fs.existsSync(filePath)) {
     return undefined;
+  }
+
+  const markdownWithMeta = fs.readFileSync(filePath, 'utf-8');
+  const { data } = matter(markdownWithMeta);
+  
+  return {
+    title: data.title,
+    slug: topicSlug,
+  };
+}
+
+/**
+ * Get all topics with their metadata
+ */
+export function getAllTopics(): Array<{ title: string; slug: string }> {
+  try {
+    const topicsPath = path.join(process.cwd(), 'src/content/topics');
+    const files = fs.readdirSync(topicsPath);
+    
+    return files
+      .filter(file => file.endsWith('.md'))
+      .map(file => {
+        const slug = file.replace('.md', '');
+        const markdownWithMeta = fs.readFileSync(path.join(topicsPath, file), 'utf-8');
+        const { data } = matter(markdownWithMeta);
+        
+        return {
+          title: data.title,
+          slug,
+        };
+      });
+  } catch (error) {
+    console.error('Error getting all topics:', error);
+    return [];
   }
 }
 

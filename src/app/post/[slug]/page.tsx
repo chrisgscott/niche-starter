@@ -16,7 +16,7 @@ import { ContentCard } from '@/components/ContentCard';
 import { Schema, ThemeColor } from '@/types/schema';
 import { Calendar, Clock, Tag } from 'lucide-react';
 import { findRelatedPosts } from '@/utils/posts';
-import { getContentMetadata, getTopicData } from '@/utils/content';
+import { getContentMetadata, getTopicData, getAllTopics } from '@/utils/content';
 import { Breadcrumb } from '@/components/Breadcrumb';
 
 interface PostProps {
@@ -117,6 +117,12 @@ export default async function Post({ params }: PostProps) {
 
   // Get related content
   const relatedPosts = await findRelatedPosts(data);
+  
+  // Get all topics for the footer
+  const topics = getAllTopics();
+
+  // Get parent topic data if it exists
+  const parentTopic = data.parent_topic ? getTopicData(data.parent_topic) : undefined;
 
   const linkClasses: Record<ThemeColor, string> = {
     blue: 'text-blue-600 hover:text-blue-800',
@@ -202,7 +208,7 @@ export default async function Post({ params }: PostProps) {
   };
 
   return (
-    <Layout data={data}>
+    <Layout data={data} topics={topics}>
       {/* Hero Section */}
       <div className={`${colors.light} bg-gradient-to-b to-white border-b`}>
         <div className="max-w-7xl mx-auto px-4 py-16">
@@ -267,10 +273,7 @@ export default async function Post({ params }: PostProps) {
       <div className="max-w-7xl mx-auto px-4 py-8 pb-32">
         {/* Breadcrumb */}
         <div className="mb-8">
-          <Breadcrumb 
-            topic={data.parent_topic ? getTopicData(data.parent_topic) : undefined}
-            currentTitle={data.title} 
-          />
+          <Breadcrumb topic={parentTopic} currentTitle={data.title} />
         </div>
 
         {/* Main Content */}
@@ -335,6 +338,7 @@ export default async function Post({ params }: PostProps) {
                 <TableOfContents 
                   content={content} 
                   activeColor={data.theme?.color || 'indigo'} 
+                  hasFaq={!!data.faq && data.faq.length > 0}
                 />
               </div>
             </div>

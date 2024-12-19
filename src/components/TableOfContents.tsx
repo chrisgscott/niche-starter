@@ -12,6 +12,7 @@ interface Heading {
 interface TableOfContentsProps {
   content: string;
   activeColor: ThemeColor;
+  hasFaq?: boolean;
 }
 
 const colorClasses: Record<ThemeColor, string> = {
@@ -32,7 +33,7 @@ const bgColorClasses: Record<ThemeColor, string> = {
   amber: 'bg-amber-50'
 };
 
-export function TableOfContents({ content, activeColor }: TableOfContentsProps) {
+export function TableOfContents({ content, activeColor, hasFaq }: TableOfContentsProps) {
   const [headings, setHeadings] = useState<Heading[]>([]);
   const [activeId, setActiveId] = useState<string>('');
 
@@ -52,8 +53,17 @@ export function TableOfContents({ content, activeColor }: TableOfContentsProps) 
       return { id, text, level };
     });
 
+    // Add FAQ section if it exists
+    if (hasFaq) {
+      extractedHeadings.push({
+        id: 'frequently-asked-questions',
+        text: 'Frequently Asked Questions',
+        level: 2
+      });
+    }
+    
     setHeadings(extractedHeadings);
-  }, [content]);
+  }, [content, hasFaq]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(

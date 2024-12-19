@@ -7,7 +7,7 @@ import rehypeRaw from 'rehype-raw';
 import { Metadata } from 'next';
 import { InternalLinker } from '@/utils/internal-linking';
 import { getThemeColors } from '@/utils/theme';
-import { getContentMetadata, findRelatedContent } from '@/utils/content';
+import { getContentMetadata, findRelatedContent, getAllTopics } from '@/utils/content';
 import { getPostsByTopic } from '@/utils/posts';
 import Image from 'next/image';
 import Link from 'next/link';
@@ -205,9 +205,12 @@ export default async function Topic({ params }: TopicProps) {
   // Get related content
   const { articles } = findRelatedContent(`/topic/${params.slug}`);
 
+  // Get all topics for the footer
+  const topics = getAllTopics();
+
   // We only need posts in the grid now
   return (
-    <Layout data={data}>
+    <Layout data={data} topics={topics}>
       {/* Hero Section */}
       <div className={`${colors.light} bg-gradient-to-b to-white border-b`}>
         <div className="max-w-7xl mx-auto px-4 py-16">

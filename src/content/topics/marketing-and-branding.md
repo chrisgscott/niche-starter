@@ -8,6 +8,8 @@ theme:
 image:
   url: "https://images.unsplash.com/photo-1606216794074-735e91aa2c92?auto=format&fit=crop&q=80"
   alt: "Professional photographer working on brand strategy"
+  credit: "Unsplash"
+keywords: ["photography marketing", "photography branding", "social media marketing", "brand development", "client acquisition"]
 tags:
   - "Marketing"
   - "Branding"
@@ -18,4 +20,9 @@ links:
   related_articles: ["/articles/marketing-tips"]
 schema:
   type: "Article"
+  datePublished: "2024-12-19"
+  dateModified: "2024-12-19"
+  author:
+    "@type": "Person"
+    name: "Photography Pro"
 ---
