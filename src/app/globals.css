@@ -2,22 +2,78 @@
 @tailwind components;
 @tailwind utilities;
 
-:root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
+@layer base {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: theme('colors.white');
+    --foreground: theme('colors.gray.900');
+  }
+
+  .dark {
+    --background: theme('colors.gray.900');
+    --foreground: theme('colors.gray.50');
   }
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  @apply bg-base-200 text-base-content min-h-screen;
+}
+
+.prose {
+  @apply max-w-none;
+}
+
+.prose a {
+  @apply link link-primary no-underline;
+}
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  @apply text-base-content;
+}
+
+.prose code {
+  @apply bg-base-200 px-1.5 py-0.5 rounded text-sm;
+}
+
+.prose pre {
+  @apply bg-base-200;
+}
+
+.prose blockquote {
+  @apply border-l-4 border-primary pl-4 italic;
+}
+
+.prose ul,
+.prose ol {
+  @apply space-y-2;
+}
+
+@layer components {
+  .internal-link {
+    @apply underline underline-offset-2 transition-colors;
+  }
+
+  /* Theme color variants */
+  .theme-blue .internal-link {
+    @apply text-blue-600 hover:text-blue-800;
+  }
+  .theme-green .internal-link {
+    @apply text-green-600 hover:text-green-800;
+  }
+  .theme-purple .internal-link {
+    @apply text-purple-600 hover:text-purple-800;
+  }
+  .theme-orange .internal-link {
+    @apply text-orange-600 hover:text-orange-800;
+  }
+  .theme-indigo .internal-link {
+    @apply text-indigo-600 hover:text-indigo-800;
+  }
+  .theme-amber .internal-link {
+    @apply text-amber-600 hover:text-amber-800;
+  }
 }
 
 @layer utilities {

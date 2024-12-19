@@ -8,6 +8,8 @@ import { getContentMetadata } from '@/utils/content';
 import Image from 'next/image';
 import Link from 'next/link';
 import { ContentCard } from '@/components/ContentCard';
+import { Layout } from '@/components/Layout';
+import { Schema } from '@/types/schema';
 
 interface SchemaHowTo {
   type: 'HowTo';
@@ -62,10 +64,22 @@ async function getPostData(slug: string): Promise<{ data: PostFrontmatter; conte
 
 export async function generateMetadata({ params }: PostProps): Promise<Metadata> {
   const { data } = await getPostData(params.slug);
-
   return {
     title: data.title,
     description: data.description,
+    keywords: data.keywords,
+    openGraph: {
+      title: data.title,
+      description: data.description,
+      images: data.image ? [
+        {
+          url: data.image.url,
+          alt: data.image.alt,
+          width: 1200,
+          height: 630,
+        }
+      ] : undefined,
+    },
   };
 }
 
@@ -116,94 +130,92 @@ export default async function Post({ params }: PostProps) {
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <article className="max-w-4xl mx-auto py-8 px-4">
-        <div className="card bg-base-100 shadow-xl">
-          <header className="card-body">
-            <h1 className="card-title text-4xl mb-4">{data.title}</h1>
-            {data.image && (
-              <figure className="relative aspect-[16/9] -mx-8">
-                <Image
-                  src={data.image.url}
-                  alt={data.image.alt}
-                  fill
-                  className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 800px"
-                />
-                <div className="absolute bottom-2 right-2 badge badge-ghost">
-                  Photo by {data.image.credit}
+    <Layout data={data as Schema}>
+      <article className="card bg-base-100 shadow-xl">
+        <header className="card-body">
+          <h1 className="card-title text-4xl mb-4">{data.title}</h1>
+          {data.image && (
+            <figure className="relative aspect-[16/9] -mx-8">
+              <Image
+                src={data.image.url}
+                alt={data.image.alt}
+                fill
+                className="object-cover"
+                sizes="(max-width: 768px) 100vw, 800px"
+              />
+              <div className="absolute bottom-2 right-2 badge badge-ghost">
+                Photo by {data.image.credit}
+              </div>
+            </figure>
+          )}
+          <div className="flex flex-wrap gap-4 my-4">
+            <time dateTime={data.date} className="badge badge-outline">
+              {new Date(data.date).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric'
+              })}
+            </time>
+            {data.keywords.map((keyword: string) => (
+              <span key={keyword} className="badge badge-secondary">
+                {keyword}
+              </span>
+            ))}
+          </div>
+          <p className="text-xl opacity-75">{data.description}</p>
+        </header>
+
+        <div className="card-body prose prose-lg max-w-none">
+          <ReactMarkdown components={components}>{content}</ReactMarkdown>
+        </div>
+
+        {/* FAQ Section */}
+        {data.faq && data.faq.length > 0 && (
+          <section className="card-body border-t border-base-300">
+            <h2 className="card-title text-2xl mb-6">Frequently Asked Questions</h2>
+            <div className="join join-vertical w-full">
+              {data.faq.map((item, index) => (
+                <div key={index} className="collapse collapse-arrow join-item border border-base-300">
+                  <input type="radio" name="faq-accordion" /> 
+                  <div className="collapse-title text-xl font-medium">
+                    {item.question}
+                  </div>
+                  <div className="collapse-content">
+                    <p>{item.answer}</p>
+                  </div>
                 </div>
-              </figure>
-            )}
-            <div className="flex flex-wrap gap-4 my-4">
-              <time dateTime={data.date} className="badge badge-outline">
-                {new Date(data.date).toLocaleDateString('en-US', {
-                  year: 'numeric',
-                  month: 'long',
-                  day: 'numeric'
-                })}
-              </time>
-              {data.keywords.map((keyword: string) => (
-                <span key={keyword} className="badge badge-secondary">
-                  {keyword}
-                </span>
               ))}
             </div>
-            <p className="text-xl opacity-75">{data.description}</p>
-          </header>
+          </section>
+        )}
 
-          <div className="card-body prose prose-lg max-w-none">
-            <ReactMarkdown components={components}>{content}</ReactMarkdown>
-          </div>
-
-          {/* FAQ Section */}
-          {data.faq && data.faq.length > 0 && (
-            <section className="card-body border-t border-base-300">
-              <h2 className="card-title text-2xl mb-6">Frequently Asked Questions</h2>
-              <div className="join join-vertical w-full">
-                {data.faq.map((item, index) => (
-                  <div key={index} className="collapse collapse-arrow join-item border border-base-300">
-                    <input type="radio" name="faq-accordion" /> 
-                    <div className="collapse-title text-xl font-medium">
-                      {item.question}
-                    </div>
-                    <div className="collapse-content">
-                      <p>{item.answer}</p>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            </section>
-          )}
-
-          {/* Related Content */}
-          {(relatedPosts.length > 0 || relatedArticles.length > 0) && (
-            <section className="card-body border-t border-base-300">
-              <h2 className="card-title text-2xl mb-6">Related Content</h2>
-              <div className="grid gap-6 md:grid-cols-2">
-                {relatedPosts.map((post, index) => (
-                  <ContentCard
-                    key={index}
-                    href={post.path}
-                    type="post"
-                    title={post.title}
-                    description={post.description}
-                  />
-                ))}
-                {relatedArticles.map((article, index) => (
-                  <ContentCard
-                    key={index}
-                    href={article.path}
-                    type="article"
-                    title={article.title}
-                    description={article.description}
-                  />
-                ))}
-              </div>
-            </section>
-          )}
-        </div>
+        {/* Related Content */}
+        {(relatedPosts.length > 0 || relatedArticles.length > 0) && (
+          <section className="card-body border-t border-base-300">
+            <h2 className="card-title text-2xl mb-6">Related Content</h2>
+            <div className="grid gap-6 md:grid-cols-2">
+              {relatedPosts.map((post, index) => (
+                <ContentCard
+                  key={index}
+                  href={post.path}
+                  type="post"
+                  title={post.title}
+                  description={post.description}
+                />
+              ))}
+              {relatedArticles.map((article, index) => (
+                <ContentCard
+                  key={index}
+                  href={article.path}
+                  type="article"
+                  title={article.title}
+                  description={article.description}
+                />
+              ))}
+            </div>
+          </section>
+        )}
       </article>
-    </div>
+    </Layout>
   );
 }

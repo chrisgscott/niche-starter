@@ -6,6 +6,53 @@ interface ContentMetadata {
   title: string;
   description: string;
   slug: string;
+  keywords?: string[];
+}
+
+interface FooterConfig {
+  about: {
+    title: string;
+    links: Array<{
+      label: string;
+      link: string;
+    }>;
+  };
+  categories: {
+    title: string;
+    links: Array<{
+      label: string;
+      link: string;
+    }>;
+  };
+  legal: {
+    title: string;
+    links: Array<{
+      label: string;
+      link: string;
+    }>;
+  };
+  subscribe: {
+    title: string;
+    description: string;
+  };
+  copyright: string;
+}
+
+interface SiteConfig {
+  title: string;
+  description: string;
+  navigation: Array<{
+    label: string;
+    link: string;
+  }>;
+  footer: FooterConfig;
+}
+
+export function getSiteConfig(): SiteConfig {
+  const configPath = path.join(process.cwd(), 'src/content/config/site.md');
+  const fileContent = fs.readFileSync(configPath, 'utf-8');
+  const { data } = matter(fileContent);
+  return data as SiteConfig;
 }
 
 export function getContentMetadata(contentPath: string): ContentMetadata {
@@ -19,7 +66,8 @@ export function getContentMetadata(contentPath: string): ContentMetadata {
     return {
       title: 'Untitled',
       description: 'No description available',
-      slug: normalizedPath.split('/').pop() || ''
+      slug: normalizedPath.split('/').pop() || '',
+      keywords: []
     };
   }
 
@@ -33,7 +81,7 @@ export function getContentMetadata(contentPath: string): ContentMetadata {
     articles: 'articles',
     topic: 'topics',
     topics: 'topics'
-  }[contentType];
+  }[contentType] || 'posts'; // Provide a default value
 
   // Read and parse the markdown file
   const filePath = path.join(process.cwd(), 'src/content', contentDir, `${slug}.md`);
@@ -45,14 +93,16 @@ export function getContentMetadata(contentPath: string): ContentMetadata {
     return {
       title: data.title || 'Untitled',
       description: data.description || 'No description available',
-      slug: data.slug || slug
+      slug: data.slug || slug,
+      keywords: data.keywords || []
     };
   } catch (error) {
     console.error(`Error reading content metadata for ${contentPath}:`, error);
     return {
       title: 'Untitled',
       description: 'No description available',
-      slug: slug
+      slug,
+      keywords: []
     };
   }
 }

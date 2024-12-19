@@ -1,137 +1,135 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
-import { ContentCard } from '@/components/ContentCard';
 import Link from 'next/link';
+import { Layout } from '@/components/Layout';
+import { Schema, ThemeColor } from '@/types/schema';
+import { TopicCard } from '@/components/TopicCard';
+import { getPostsByTopic } from '@/utils/posts';
 
-interface ContentItem {
+interface Topic {
   title: string;
   description: string;
   slug: string;
-  type: 'topic' | 'post' | 'article';
+  theme: {
+    color: ThemeColor;
+    icon: string;
+  };
   image?: {
     url: string;
     alt: string;
-    credit: string;
   };
-  date?: string;
+  tags?: string[];
+}
+
+interface HomeContent extends Schema {
+  hero: {
+    title: string;
+    description: string;
+    cta: {
+      text: string;
+      link: string;
+    };
+  };
 }
 
 export default async function Home() {
-  // Function to read content files
-  const getContentFiles = (directory: string, type: 'topic' | 'post' | 'article'): ContentItem[] => {
-    const contentDir = path.join(process.cwd(), 'src/content', `${type}s`);
-    const files = fs.readdirSync(contentDir);
-    
-    return files.map(filename => {
-      const fileContent = fs.readFileSync(path.join(contentDir, filename), 'utf-8');
-      const { data } = matter(fileContent);
-      return {
-        title: data.title,
-        description: data.description,
-        slug: filename.replace('.md', ''),
-        type,
-        image: data.image,
-        date: data.date
-      };
-    });
-  };
+  // Read homepage content
+  const homeContent = fs.readFileSync(
+    path.join(process.cwd(), 'src/content/home.md'),
+    'utf-8'
+  );
+  const parsed = matter(homeContent);
+  const home = parsed.data as HomeContent;
 
-  // Get all content
-  const topics = getContentFiles('topics', 'topic');
-  const posts = getContentFiles('posts', 'post');
-  const articles = getContentFiles('articles', 'article');
+  // Get all topics and their posts
+  const topicsPath = path.join(process.cwd(), 'src/content/topics');
+  const topicsWithPosts = await Promise.all(
+    fs.readdirSync(topicsPath)
+      .filter(file => file.endsWith('.md'))
+      .map(async file => {
+        const content = fs.readFileSync(path.join(topicsPath, file), 'utf-8');
+        const { data } = matter(content);
+        const slug = data.slug as string;
+        const posts = await getPostsByTopic(slug, 3); // Get up to 3 recent posts per topic
+
+        return {
+          title: data.title || '',
+          description: data.description || '',
+          slug,
+          theme: data.theme || { color: 'blue', icon: 'briefcase' },
+          image: data.image,
+          tags: data.tags || [],
+          recentPosts: posts.map(post => ({
+            title: post.title,
+            link: `/posts/${post.slug}`
+          }))
+        };
+      })
+  );
 
   return (
-    <main className="max-w-6xl mx-auto py-8 px-4">
-      <h1 className="text-4xl font-bold mb-8">Niche Site Content</h1>
-      
+    <Layout 
+      data={home}
+      topics={topicsWithPosts.map(topic => ({
+        title: topic.title,
+        slug: topic.slug
+      }))}
+    >
+      {/* Hero Section */}
+      <div className="w-full bg-slate-50 border-b">
+        <div className="max-w-7xl mx-auto px-4 py-24">
+          <div className="max-w-3xl">
+            <h1 className="text-5xl font-bold mb-6 text-slate-900">
+              {home.hero.title}
+            </h1>
+            <p className="text-xl text-slate-600 mb-8">
+              {home.hero.description}
+            </p>
+            <div className="flex gap-4">
+              <Link
+                href={home.hero.cta.link}
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+              >
+                {home.hero.cta.text}
+              </Link>
+              <Link
+                href="/about"
+                className="bg-white text-slate-700 px-6 py-3 rounded-lg font-medium hover:bg-slate-100 transition-colors"
+              >
+                About Us
+              </Link>
+            </div>
+          </div>
+        </div>
+      </div>
+
       {/* Topics Section */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <span className="text-blue-600 mr-2">📚</span> Topics
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {topics.map((item) => (
-            <ContentCard
-              key={item.slug}
-              href={`/topic/${item.slug}`}
-              title={item.title}
-              description={item.description}
-              type={item.type}
-              image={item.image}
+      <div className="max-w-7xl mx-auto px-4 py-24">
+        <div className="text-center mb-16">
+          <h2 className="text-3xl font-bold mb-4">
+            Photography Business Resource Library
+          </h2>
+          <p className="text-xl text-gray-600 max-w-2xl mx-auto">
+            Welcome to our comprehensive resource library for photography business owners.
+            Explore our curated content to help you grow your skills, expand your business,
+            and succeed in the competitive world of professional photography.
+          </p>
+        </div>
+
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
+          {topicsWithPosts.map((topic) => (
+            <TopicCard
+              key={topic.slug}
+              slug={topic.slug}
+              title={topic.title}
+              description={topic.description}
+              theme={topic.theme}
+              recentPosts={topic.recentPosts}
             />
           ))}
         </div>
-      </section>
-
-      {/* Posts Section */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <span className="text-green-600 mr-2">📝</span> Posts
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {posts.map((item) => (
-            <ContentCard
-              key={item.slug}
-              href={`/post/${item.slug}`}
-              title={item.title}
-              description={item.description}
-              type={item.type}
-              image={item.image}
-              date={item.date}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Articles Section */}
-      <section className="mb-12">
-        <h2 className="text-2xl font-semibold mb-6 flex items-center">
-          <span className="text-purple-600 mr-2">📊</span> Articles
-        </h2>
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
-          {articles.map((item) => (
-            <ContentCard
-              key={item.slug}
-              href={`/article/${item.slug}`}
-              title={item.title}
-              description={item.description}
-              type={item.type}
-              image={item.image}
-            />
-          ))}
-        </div>
-      </section>
-
-      {/* Development Links */}
-      <section className="mt-16 p-6 bg-gray-50 rounded-lg">
-        <h2 className="text-xl font-semibold mb-4 flex items-center">
-          <span className="text-gray-600 mr-2">🛠</span> Development Links
-        </h2>
-        <ul className="space-y-2 text-sm">
-          <li>
-            <Link href="/topic/home-office-setup" className="text-blue-600 hover:underline">
-              Example Topic: Home Office Setup
-            </Link>
-          </li>
-          <li>
-            <Link href="/post/choose-perfect-desk" className="text-blue-600 hover:underline">
-              Example Post: Choosing a Desk
-            </Link>
-          </li>
-          <li>
-            <Link href="/post/ergonomic-chair-selection" className="text-blue-600 hover:underline">
-              Example Post: Ergonomic Chair Selection
-            </Link>
-          </li>
-          <li>
-            <Link href="/article/best-home-office-chairs" className="text-blue-600 hover:underline">
-              Example Article: Best Office Chairs
-            </Link>
-          </li>
-        </ul>
-      </section>
-    </main>
+      </div>
+    </Layout>
   );
 }

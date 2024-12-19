@@ -49,7 +49,8 @@ export class InternalLinker {
    * Add internal links to a paragraph of text
    */
   public addLinks(text: string): string {
-    const paragraphLinks: Set<string> = new Set();
+    let result = text;
+    let linksAdded = 0;
     
     // Find all possible links for this paragraph
     const suggestions = this.findLinkSuggestions(text);
@@ -60,7 +61,7 @@ export class InternalLinker {
     // Process each suggestion
     for (const suggestion of suggestions) {
       // Skip if we've reached the max links for this paragraph
-      if (paragraphLinks.size >= this.maxLinksPerParagraph) break;
+      if (linksAdded >= this.maxLinksPerParagraph) break;
       
       // Skip if we've already used this URL too many times
       if (this.shouldSkipLink(suggestion.url)) continue;
@@ -68,19 +69,20 @@ export class InternalLinker {
       // Skip if it's the current page
       if (suggestion.url === this.currentUrl) continue;
       
-      // Add the link
-      text = this.replaceKeywordWithLink(
-        text,
-        suggestion.keyword,
-        suggestion.url
+      const title = this.links.urls[suggestion.url]?.title || suggestion.keyword;
+      const linkText = `<a href="${suggestion.url}" class="internal-link">${title}</a>`;
+      
+      // Replace the keyword with the link, but only once per keyword
+      result = result.replace(
+        new RegExp(`\\b${suggestion.keyword}\\b`, 'i'),
+        linkText
       );
       
-      // Track usage
       this.usedLinks.add(suggestion.url);
-      paragraphLinks.add(suggestion.url);
+      linksAdded++;
     }
     
-    return text;
+    return result;
   }
 
   /**
@@ -120,23 +122,6 @@ export class InternalLinker {
   private shouldSkipLink(url: string): boolean {
     const urlCount = Array.from(this.usedLinks).filter(u => u === url).length;
     return urlCount >= this.maxLinksPerKeyword;
-  }
-
-  /**
-   * Replace a keyword with an HTML link
-   */
-  private replaceKeywordWithLink(
-    text: string,
-    keyword: string,
-    url: string
-  ): string {
-    const regex = new RegExp(`\\b${keyword}\\b`, 'i');
-    const match = text.match(regex);
-    
-    if (!match) return text;
-    
-    const link = `<a href="${url}" class="text-blue-600 hover:underline">${match[0]}</a>`;
-    return text.replace(regex, link);
   }
 
   /**
