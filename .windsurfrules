@@ -1,0 +1,148 @@
+# Windsurf Project Context: Boilerplate Niche Site Generator
+
+## **Project Overview**
+This project is a **boilerplate for generating SEO-optimized niche sites**. The core goal is to create a reusable framework where:
+- The **frontend design is entirely content-agnostic**, focusing solely on rendering the content provided in Markdown files.
+- All site-specific content resides in structured Markdown files with YAML frontmatter.
+- The project supports **Hub & Spoke content models** and **Programmatic SEO (article) pages**, with automated internal linking for enhanced SEO.
+
+## **Primary Objectives**
+1. **Reusable Boilerplate**: The codebase should remain reusable across various niche sites.
+2. **SEO Optimization**: Maximize SEO performance by implementing schema.org structured data (e.g., FAQ, HowTo, List, Article) and optimizing metadata (e.g., titles, descriptions, keywords).
+3. **Flatfile Content Management**: Use Markdown files for all content to avoid the need for a backend or database.
+4. **Dynamic and Automated**:
+   - Dynamically render content based on flatfiles.
+   - Automate content generation and linking via CrewAI workflows.
+5. **Lightweight Deployment**: Ensure the framework is optimized for static deployment on platforms like Vercel.
+
+---
+
+## **Project Architecture**
+### **Content Structure**
+All content is stored as Markdown files under `content/`:
+```
+content/
+├── topics/       # "hub" pages
+├── posts/     # "spoke" pages
+├── article/       # Programmatic SEO pages
+└── internal_links.json  # JSON mapping for internal linking
+```
+
+### **Frontmatter Requirements**
+Each Markdown file includes YAML frontmatter for metadata and schema definitions:
+#### **Topics**
+```yaml
+title: "[Hub Topic]"
+description: "[In-depth overview of the hub topic]"
+slug: "[hub-topic]"
+keywords: ["keyword 1", "keyword 2", "keyword 3"]
+links:
+  posts: ["/post/slug-1", "/post/slug-2"]
+  related_article: ["/article/slug-1"]
+schema:
+  type: "Article"
+```
+#### **posts**
+```yaml
+title: "[post Topic]"
+description: "[Detailed post content description]"
+slug: "[post-topic]"
+date: "YYYY-MM-DD"
+keywords: ["long-tail keyword 1", "long-tail keyword 2"]
+links:
+  topic: "/topic/slug"
+  related_posts: ["/post/slug-1"]
+  related_article: ["/article/slug-1"]
+faq:
+  - question: "What is [post Topic]?"
+    answer: "[Answer to the question]"
+schema:
+  type: "HowTo"
+  steps:
+    - step: "Step 1: [Instruction step 1]"
+    - step: "Step 2: [Instruction step 2]"
+```
+#### **article Pages**
+```yaml
+title: "[Template-driven title]"
+description: "[Description based on the template]"
+slug: "[template-keyword]"
+keywords: ["keyword template"]
+links:
+  topic: "/topic/slug"
+faq:
+  - question: "What does [Template-driven title] cover?"
+    answer: "[Detailed answer]"
+schema:
+  type: "List"
+  items:
+    - "Item 1: [List item 1 description]"
+    - "Item 2: [List item 2 description]"
+```
+
+---
+
+### **Dynamic Routing**
+Dynamic routes in Next.js:
+- **topic Pages**: `/topic/[slug].tsx`
+- **post Pages**: `/post/[slug].tsx`
+- **article Pages**: `/article/[slug].tsx`
+
+The routes dynamically pull Markdown content from the `content/` directory and render it using React components.
+
+---
+
+## **Key Design Principles**
+1. **Content-Agnostic Frontend**:
+   - The frontend should be completely agnostic of the content structure.
+   - Dynamic rendering ensures new content can be added or changed without altering the codebase.
+2. **Flatfile Workflow**:
+   - Markdown files drive all content.
+   - CrewAI workflows handle content generation and internal linking automation.
+3. **SEO Schema Support**:
+   - Each page supports structured data, dynamically rendered from frontmatter.
+   - Types include `Article`, `HowTo`, `List`, and `FAQ` schema.
+4. **Separation of Concerns**:
+   - **Design** (CSS/Tailwind) is isolated from **content**.
+   - Core components are reusable across page types.
+5. **Automation Ready**:
+   - Scripts automate repetitive tasks like internal linking and sitemap generation.
+
+---
+
+## **CrewAI Integration**
+### **Workflows**
+1. **post Generation**:
+   - Generate Markdown files with `faq` and `schema` metadata.
+   - Store in `content/posts/`.
+2. **topic Generation**:
+   - Summarize related posts and create topic Markdown files.
+   - Store in `content/topics/`.
+3. **article Generation**:
+   - Template-driven generation for high-volume pages.
+   - Store in `content/article/`.
+4. **Internal Linking**:
+   - Analyze keywords and generate `links` for all Markdown files.
+   - Update `internal_links.json` for centralized link mapping.
+
+### **Deployment Workflow**
+1. CrewAI outputs new Markdown files to the `content/` directory.
+2. Git pushes trigger Vercel deployments.
+3. Vercel rebuilds static pages and deploys updated content.
+
+---
+
+## **Development Considerations**
+1. **Framework**: Next.js with TypeScript for type safety.
+2. **Styling**: TailwindCSS for utility-first styling.
+3. **Hosting**: Vercel for fast, free deployment of static sites.
+4. **Content Updates**: Content updates happen via Markdown; no backend is required.
+5. **Lightweight Dependencies**: Only essential libraries (e.g., `gray-matter`, `react-markdown`, `next-seo`).
+
+---
+
+## **Final Notes**
+- Ensure complete separation of content and design to maximize reusability.
+- Maintain strict adherence to SEO best practices, especially structured data.
+- Use this context as a reference to ensure the project remains aligned with its boilerplate purpose.
+

@@ -1,0 +1,66 @@
+{
+  "keywords": {
+    "home office": {
+      "primary": "/topic/home-office-setup",
+      "related": [
+        "/post/choose-perfect-desk",
+        "/post/ergonomic-chair-selection",
+        "/article/best-home-office-chairs"
+      ]
+    },
+    "office desk": {
+      "primary": "/post/choose-perfect-desk",
+      "related": [
+        "/topic/home-office-setup",
+        "/post/ergonomic-chair-selection"
+      ]
+    },
+    "ergonomic chair": {
+      "primary": "/post/ergonomic-chair-selection",
+      "related": [
+        "/topic/home-office-setup",
+        "/article/best-home-office-chairs"
+      ]
+    }
+  },
+  "urls": {
+    "/topic/home-office-setup": {
+      "title": "Complete Home Office Setup Guide",
+      "type": "topic",
+      "keywords": ["home office", "workspace design", "office setup"],
+      "outbound": [
+        "/post/choose-perfect-desk",
+        "/post/ergonomic-chair-selection",
+        "/article/best-home-office-chairs"
+      ]
+    },
+    "/post/choose-perfect-desk": {
+      "title": "How to Choose the Perfect Desk for Your Home Office",
+      "type": "post",
+      "keywords": ["office desk", "desk selection", "workspace furniture"],
+      "outbound": [
+        "/topic/home-office-setup",
+        "/post/ergonomic-chair-selection",
+        "/article/best-home-office-chairs"
+      ]
+    },
+    "/post/ergonomic-chair-selection": {
+      "title": "How to Select the Perfect Ergonomic Office Chair",
+      "type": "post",
+      "keywords": ["ergonomic chair", "office chair", "seating"],
+      "outbound": [
+        "/topic/home-office-setup",
+        "/post/choose-perfect-desk",
+        "/article/best-home-office-chairs"
+      ]
+    },
+    "/article/best-home-office-chairs": {
+      "title": "Best Home Office Chairs for Every Budget in 2024",
+      "type": "article",
+      "keywords": ["office chairs", "ergonomic chairs", "chair reviews"],
+      "outbound": [
+        "/topic/home-office-setup"
+      ]
+    }
+  }
+}
