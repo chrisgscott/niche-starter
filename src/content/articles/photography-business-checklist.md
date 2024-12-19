@@ -2,6 +2,7 @@
 title: "Photography Business Startup Checklist: 50 Essential Steps"
 description: "Complete checklist of everything you need to start a photography business, from legal requirements to equipment and marketing essentials."
 slug: "photography-business-checklist"
+topic: "photography-business-basics"
 keywords: ["photography business checklist", "start photography business", "photography business essentials", "photography business setup"]
 image:
   url: "https://images.unsplash.com/photo-1493863641943-9b68992a8d07"

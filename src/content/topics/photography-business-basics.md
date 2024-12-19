@@ -6,9 +6,10 @@ theme:
   color: "indigo"
   icon: "briefcase"
 keywords: ["photography business", "photography license", "photography pricing", "photography contracts", "business basics"]
-links:
-  posts: ["/post/photography-business-license", "/post/photography-pricing-guide", "/post/photography-contracts"]
-  related_articles: ["/article/photography-business-checklist"]
+image:
+  url: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d"
+  alt: "Professional photographer reviewing client photos on computer"
+  credit: "Unsplash Photographer"
 schema:
   type: "Article"
   datePublished: "2024-12-19"
@@ -16,10 +17,6 @@ schema:
   author:
     "@type": "Person"
     name: "Photography Pro"
-image:
-  url: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d"
-  alt: "Professional photographer reviewing client photos on computer"
-  credit: "Unsplash Photographer"
 ---
 
 Starting a photography business requires more than just creative talent and technical skills. This comprehensive guide covers everything you need to know about the business side of professional photography.

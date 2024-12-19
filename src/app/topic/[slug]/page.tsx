@@ -7,12 +7,15 @@ import rehypeRaw from 'rehype-raw';
 import { Metadata } from 'next';
 import { InternalLinker } from '@/utils/internal-linking';
 import { getThemeColors } from '@/utils/theme';
-import { getContentMetadata } from '@/utils/content';
+import { getContentMetadata, findRelatedContent } from '@/utils/content';
+import { getPostsByTopic } from '@/utils/posts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
 import { TableOfContents } from '@/components/TableOfContents';
 import { FAQ } from '@/components/FAQ';
+import { ContentCard } from '@/components/ContentCard';
+import { PostGrid } from '@/components/PostGrid';
 import { Schema, FAQItem, ThemeColor } from '@/types/schema';
 import { Briefcase, Megaphone, Camera, Aperture } from 'lucide-react';
 import React from 'react';
@@ -44,13 +47,12 @@ export async function generateMetadata({ params }: TopicProps): Promise<Metadata
   const { data } = await getTopicData(params.slug);
   
   // Get keywords from topic and related content
-  const relatedPosts = data.links?.posts?.map(postPath => getContentMetadata(postPath)) || [];
-  const relatedArticles = data.links?.related_articles?.map(articlePath => getContentMetadata(articlePath)) || [];
+  const { posts, articles } = findRelatedContent(`/topic/${params.slug}`);
+  const relatedContent = [...posts, ...articles];
   
   const allKeywords = new Set([
     ...(data.keywords || []),
-    ...relatedPosts.flatMap(post => post.keywords || []),
-    ...relatedArticles.flatMap(article => article.keywords || [])
+    ...relatedContent.map(item => item.keywords || []).flat()
   ]);
 
   return {
@@ -197,6 +199,13 @@ export default async function Topic({ params }: TopicProps) {
     ),
   };
 
+  // Get all posts for this topic
+  const posts = await getPostsByTopic(params.slug);
+
+  // Get related content
+  const { articles } = findRelatedContent(`/topic/${params.slug}`);
+
+  // We only need posts in the grid now
   return (
     <Layout data={data}>
       {/* Hero Section */}
@@ -250,9 +259,6 @@ export default async function Topic({ params }: TopicProps) {
         <div className="grid md:grid-cols-3 gap-8">
           {/* Main Content */}
           <div className="md:col-span-2 space-y-8">
-            {/* FAQ Section */}
-            {data.faq && <FAQ items={data.faq} themeColor={data.theme?.color || 'indigo'} />}
-
             {/* Main Content */}
             <div className={`prose prose-slate prose-headings:scroll-mt-24 max-w-none`}>
               <ReactMarkdown 
@@ -266,7 +272,7 @@ export default async function Topic({ params }: TopicProps) {
           </div>
 
           {/* Sidebar */}
-          <aside className="hidden md:block">
+          <aside className="md:col-span-1">
             <div className="sticky top-24 space-y-8">
               {/* Table of Contents */}
               <div className="bg-white rounded-lg border border-slate-200 p-6">
@@ -279,6 +285,16 @@ export default async function Topic({ params }: TopicProps) {
           </aside>
         </div>
       </div>
+
+      {/* All Topic Posts Section */}
+      {posts.length > 0 && (
+        <div className="mt-16 border-t pt-16 pb-16">
+          <div className="max-w-7xl mx-auto px-4">
+            <h2 className="text-3xl font-bold text-slate-900 mb-8">All {data.title} Posts</h2>
+            <PostGrid posts={posts} postsPerPage={12} />
+          </div>
+        </div>
+      )}
     </Layout>
   );
 }

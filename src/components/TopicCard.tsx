@@ -65,21 +65,19 @@ export function TopicCard({ title, description, theme, recentPosts, slug }: Topi
 
   return (
     <div className={`rounded-lg border ${color.border} overflow-hidden shadow-sm hover:shadow-md transition-all duration-200 flex flex-col`}>
-      <div className={`${color.light} p-4`}>
+      <Link
+        href={`/topic/${slug}`}
+        className={`${color.light} p-4 block hover:bg-opacity-75 transition-colors`}
+      >
         <div className="flex items-center gap-3">
           <div className={`${color.dark} p-2 rounded-lg`}>
             <Icon className="w-5 h-5 text-white" />
           </div>
           <h3 className={`font-semibold ${color.text}`}>{title}</h3>
         </div>
-      </div>
+      </Link>
       <div className="p-6 bg-slate-25 bg-gray-50/50 flex-grow">
         <p className="text-gray-600 mb-4">{description}</p>
-        <Link
-          className="absolute inset-0 rounded-lg focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-          href={`/topic/${slug}`}
-          aria-label={`View ${title} topic`}
-        />
         <Link
           href={`/topic/${slug}`}
           className={`inline-flex items-center ${color.text} hover:underline font-medium`}

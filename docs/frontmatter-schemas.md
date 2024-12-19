@@ -14,6 +14,7 @@ image?:                # Optional but recommended for all content types
   url: string         # Full URL to image (preferably Unsplash)
   alt: string         # Descriptive alt text
   credit: string      # Photographer or image credit
+topic?: string        # Topic slug (required for posts and articles)
 ```
 
 ## Homepage
@@ -63,24 +64,11 @@ theme:                 # Visual styling configuration
   icon: string         # Lucide icon name (briefcase, megaphone, camera, aperture)
 image:
   url: string         # Unsplash image URL
-  alt: string         # Image alt text
+  alt: string         # Descriptive alt text
   credit?: string     # Optional image credit
-tags: string[]        # Topic tags
-links:
-  posts: string[]     # Related post URLs
-  related_articles: string[]  # Related article URLs
-sections:                       # Organized content sections
-  - title: "Recruiting"        # Section title
-    description: "Hiring and recruitment resources"
-    featured_posts: string[]   # Array of featured post URLs in this section
-  - title: "Compensation"
-    description: "Salary and benefits guides"
-    featured_posts: string[]
-featured_items:                # Optional featured content
-  posts: string[]             # Featured posts across all sections
-  articles: string[]          # Featured articles across all sections
+keywords: string[]    # SEO keywords
 schema:
-  type: "Article"
+  type: "Article"     # Always Article for topic pages
   datePublished?: string
   dateModified?: string
   author?:
@@ -88,28 +76,32 @@ schema:
     name: string
 ```
 
-## Post Pages (Sub-Topics)
-Used for category-specific content pages that belong to a topic. These are the intermediary pages that group related content.
+## Post Pages
+Used for content pages that belong to a topic.
 
 ```yaml
-title: "Complete Recruiting Guide"
-description: "Comprehensive recruiting and hiring strategies"
-slug: "recruiting-guide"
-date: "2024-12-19"
-keywords: ["recruiting", "hiring", "talent acquisition"]
-parent_topic: string          # URL of parent topic (e.g., "/topic/hr-library")
-sub_articles: string[]        # URLs of child articles in this category
-related_subtopics: string[]   # URLs of related sub-topics (e.g., other recruiting guides)
-links:
-  topic: string              # Parent topic URL
-  related_posts?: string[]   # Related sub-topic URLs
-  related_articles?: string[] # Related article URLs
-featured_articles?: string[] # Optional featured articles for this sub-topic
-schema:
-  type: "HowTo"
-  steps:
-    - "@type": "HowToStep"
-      text: string
+title: string          # Post title
+description: string    # Post description
+slug: string          # URL-friendly identifier
+date: string          # Publication date (YYYY-MM-DD)
+parent_topic: string  # Topic slug this post belongs to (e.g., "photography-business-basics")
+keywords: string[]    # SEO keywords and for finding related content
+image:
+  url: string         # Unsplash image URL
+  alt: string         # Descriptive alt text
+  credit: string      # Photographer credit
+faq?:                 # Optional FAQ section for SEO
+  - question: string
+    answer: string
+schema:               # SEO schema configuration
+  type: "HowTo"      # or "Article", "List", etc.
+  datePublished: string
+  dateModified: string
+  steps?:            # Required for HowTo schema
+    - text: string
+  author?:
+    "@type": "Person"
+    name: string
 ```
 
 ## Article Pages (Individual Content)
@@ -132,7 +124,7 @@ breadcrumb:                 # Navigation path
 links:
   topic: string            # Parent topic URL
   post: string            # Parent post (sub-topic) URL
-  related_articles?: string[] # Similar articles
+topic: string             # Topic slug (required)
 schema:
   type: "ItemList"
   items:

@@ -62,7 +62,7 @@ export default async function Home() {
           tags: data.tags || [],
           recentPosts: posts.map(post => ({
             title: post.title,
-            link: `/posts/${post.slug}`
+            link: `/post/${post.slug}`
           }))
         };
       })

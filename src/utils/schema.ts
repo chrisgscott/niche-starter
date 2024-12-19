@@ -1,4 +1,4 @@
-import { Schema } from '@/types/schema';
+import { Schema, HowToStep, FAQItem } from '@/types/schema';
 
 interface BaseSchema {
   title: string;
@@ -13,42 +13,38 @@ interface BaseSchema {
   };
 }
 
+interface MonetaryAmount {
+  currency: string;
+  amount: number;
+}
+
 interface ArticleSchemaData {
   type: 'Article';
 }
 
-interface HowToStep {
-  step: string;
-}
-
 interface HowToSchemaData {
   type: 'HowTo';
-  steps: HowToStep[];
+  steps?: HowToStep[];
   totalTime?: string;
-  estimatedCost?: {
-    currency: string;
-    value: number;
-  };
+  estimatedCost?: MonetaryAmount;
 }
 
 interface ListSchemaData {
   type: 'List';
-  items: string[];
-}
-
-interface FAQItem {
-  question: string;
-  answer: string;
+  items?: string[];
 }
 
 interface FAQSchemaData {
   type: 'FAQ';
-  items: FAQItem[];
+  faq?: FAQItem[];
 }
 
 export type SchemaData = ArticleSchemaData | HowToSchemaData | ListSchemaData | FAQSchemaData;
 
-export function generateSchemaMarkup(data: Schema): Record<string, unknown> {
+export function generateSchemaMarkup(data: Schema & { 
+  totalTime?: string;
+  estimatedCost?: MonetaryAmount;
+}): Record<string, unknown> {
   const baseSchema = {
     '@context': 'https://schema.org',
     '@type': data.type,
@@ -71,22 +67,22 @@ export function generateSchemaMarkup(data: Schema): Record<string, unknown> {
     case 'HowTo':
       return {
         ...baseSchema,
-        step: data.steps.map(step => ({
+        step: data.steps?.map(step => ({
           '@type': 'HowToStep',
-          text: step.step
+          text: step.text
         })),
         totalTime: data.totalTime,
         estimatedCost: data.estimatedCost ? {
           '@type': 'MonetaryAmount',
           currency: data.estimatedCost.currency,
-          value: data.estimatedCost.value
+          amount: data.estimatedCost.amount
         } : undefined
       };
 
     case 'List':
       return {
         ...baseSchema,
-        itemListElement: data.items.map((item, index) => ({
+        itemListElement: data.items?.map((item, index) => ({
           '@type': 'ListItem',
           position: index + 1,
           item: {
@@ -97,9 +93,10 @@ export function generateSchemaMarkup(data: Schema): Record<string, unknown> {
       };
 
     case 'FAQ':
+      if (!data.faq) return baseSchema;
       return {
         ...baseSchema,
-        mainEntity: data.items.map(item => ({
+        mainEntity: data.faq.map(item => ({
           '@type': 'Question',
           name: item.question,
           acceptedAnswer: {

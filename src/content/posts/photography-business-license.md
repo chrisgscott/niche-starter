@@ -3,37 +3,32 @@ title: "Photography Business License Guide: Requirements & Steps"
 description: "Complete guide to obtaining your photography business license, including state requirements, costs, and step-by-step application process."
 slug: "photography-business-license"
 date: "2024-12-19"
-featured: true
+parent_topic: "photography-business-basics"
 keywords: ["photography business license", "photographer licensing", "business permits", "photography legal requirements"]
 image:
   url: "https://images.unsplash.com/photo-1556155092-490a1ba16284"
   alt: "Photographer reviewing business documents at desk"
   credit: "Unsplash Photographer"
-links:
-  topic: "/topic/photography-business-basics"
-  related_posts: ["/post/photography-pricing-guide", "/post/photography-contracts"]
-  related_articles: ["/article/photography-business-checklist"]
 faq:
   - question: "Do I need a business license for photography?"
     answer: "Yes, most jurisdictions require a business license for professional photography services, even if you're operating from home."
   - question: "How much does a photography business license cost?"
-    answer: "Costs vary by location but typically range from $50-$200 annually for a basic business license."
-  - question: "Can I run a photography business without a license?"
-    answer: "Operating without required licenses can result in fines and legal issues. It's essential to obtain proper licensing before starting your business."
+    answer: "Costs vary by location but typically range from $50 to $200 annually for a basic business license."
+  - question: "What type of business license do I need for photography?"
+    answer: "Most photographers need a general business license, but some areas may require additional permits for commercial photography or studio operations."
 schema:
   type: "HowTo"
+  datePublished: "2024-12-19"
+  dateModified: "2024-12-19"
   steps:
-    - text: "Research local requirements for photography businesses"
+    - text: "Research your local licensing requirements"
     - text: "Choose your business structure (LLC, Sole Proprietorship, etc.)"
     - text: "Register your business name"
-    - text: "Apply for state/local business license"
+    - text: "Apply for your business license"
     - text: "Obtain additional permits if needed"
-    - text: "Set up business insurance"
-  totalTime: "P14D"
-  estimatedCost:
-    "@type": "MonetaryAmount"
-    currency: "USD"
-    value: 500
+  author:
+    "@type": "Person"
+    name: "Photography Pro"
 ---
 
 Starting a photography business requires proper licensing and permits. This guide walks you through everything you need to know about obtaining your photography business license.

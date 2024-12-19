@@ -1,14 +1,14 @@
 export interface ImageData {
   url: string;
   alt: string;
-  credit: string;
+  credit?: string;
 }
 
-export type ThemeColor = 'indigo' | 'blue' | 'green' | 'purple' | 'orange' | 'amber';
+export type ThemeColor = 'blue' | 'green' | 'purple' | 'orange' | 'indigo' | 'amber';
 
 export interface Theme {
   color: ThemeColor;
-  icon: string;
+  icon?: string;
 }
 
 export interface FAQItem {
@@ -16,53 +16,38 @@ export interface FAQItem {
   answer: string;
 }
 
-export interface BaseSchema {
+export interface HowToStep {
+  text: string;
+}
+
+export interface SchemaAuthor {
+  "@type": "Person";
+  name: string;
+  url?: string;
+}
+
+export interface Schema {
   title: string;
   description: string;
   slug: string;
-  theme?: Theme;
+  date: string;
+  parent_topic?: string;
   keywords: string[];
-  faq?: FAQItem[];
-  links?: {
-    posts?: string[];
-    related_articles?: string[];
+  theme?: {
+    color: ThemeColor;
+    icon?: string;
   };
   image?: ImageData;
-  datePublished?: string;
+  faq?: FAQItem[];
+  type: string;
+  datePublished: string;
   dateModified?: string;
-  author?: {
-    name: string;
-    url?: string;
-  };
+  steps?: HowToStep[];
+  items?: string[];
+  author?: SchemaAuthor;
 }
 
-export interface ArticleSchemaData {
-  type: 'Article';
+export interface Post extends Schema {
+  parent_topic: string;  // Required for posts
+  date: string;         // Required for posts
 }
-
-export interface HowToStep {
-  step: string;
-}
-
-export interface HowToSchemaData {
-  type: 'HowTo';
-  steps: HowToStep[];
-  totalTime?: string;
-  estimatedCost?: {
-    currency: string;
-    value: number;
-  };
-}
-
-export interface ListSchemaData {
-  type: 'List';
-  items: string[];
-}
-
-export interface FAQSchemaData {
-  type: 'FAQ';
-  items: FAQItem[];
-}
-
-export type SchemaData = ArticleSchemaData | HowToSchemaData | ListSchemaData | FAQSchemaData;
-export type Schema = BaseSchema & SchemaData;

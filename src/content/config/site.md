@@ -2,8 +2,8 @@
 title: "Photography Business Guide"
 description: "Your complete guide to starting and growing a photography business"
 navigation:
-  - label: "Blog"
-    link: "/blog"
+  - label: "Posts"
+    link: "/posts"
   - label: "About"
     link: "/about"
 footer:
@@ -17,8 +17,8 @@ footer:
   resources:
     title: "Resources"
     links:
-      - label: "Blog"
-        link: "/blog"
+      - label: "Posts"
+        link: "/posts"
       - label: "Guides"
         link: "/guides"
       - label: "FAQ"

@@ -1,37 +1,74 @@
 'use client';
 
+import Image from 'next/image';
 import Link from 'next/link';
-import { Schema } from '@/types/schema';
+import { RelatedContent as RelatedContentType } from '@/types/schema';
 
 interface RelatedContentProps {
-  topic: Schema;
-  posts: Array<{
-    title: string;
-    description: string;
-    path: string;
-  }>;
+  posts: RelatedContentType[];
+  articles: RelatedContentType[];
 }
 
-export function RelatedContent({ topic, posts }: RelatedContentProps) {
-  if (!posts.length) return null;
-  
+export function RelatedContent({ posts, articles }: RelatedContentProps) {
+  if (posts.length === 0 && articles.length === 0) return null;
+
   return (
-    <div>
-      <h3 className="text-lg font-semibold mb-3">Related Posts</h3>
-      <ul className="space-y-4">
-        {posts.map((post) => (
-          <li key={post.path}>
-            <Link href={post.path} className="block hover:bg-slate-50 rounded transition-colors p-2 -mx-2">
-              <h4 className="font-medium text-slate-900">
+    <div className="space-y-4">
+      <h2 className="text-2xl font-bold text-slate-900">Related Content</h2>
+      <div className="space-y-4">
+        {posts.map((post, index) => post && (
+          <Link
+            key={index}
+            href={post.path}
+            className="flex gap-4 group"
+          >
+            {post.image && (
+              <div className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden">
+                <Image
+                  src={post.image.url}
+                  alt={post.image.alt || ''}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <div>
+              <h3 className="font-medium text-slate-900 group-hover:text-slate-600">
                 {post.title}
-              </h4>
-              <p className="text-sm text-slate-600 mt-1 line-clamp-2">
+              </h3>
+              <p className="text-sm text-slate-600 line-clamp-2">
                 {post.description}
               </p>
-            </Link>
-          </li>
+            </div>
+          </Link>
         ))}
-      </ul>
+        {articles.map((article, index) => article && (
+          <Link
+            key={`article-${index}`}
+            href={article.path}
+            className="flex gap-4 group"
+          >
+            {article.image && (
+              <div className="relative shrink-0 w-16 h-16 rounded-lg overflow-hidden">
+                <Image
+                  src={article.image.url}
+                  alt={article.image.alt || ''}
+                  fill
+                  className="object-cover"
+                />
+              </div>
+            )}
+            <div>
+              <h3 className="font-medium text-slate-900 group-hover:text-slate-600">
+                {article.title}
+              </h3>
+              <p className="text-sm text-slate-600 line-clamp-2">
+                {article.description}
+              </p>
+            </div>
+          </Link>
+        ))}
+      </div>
     </div>
   );
 }
