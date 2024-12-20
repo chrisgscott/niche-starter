@@ -9,6 +9,10 @@ image:
   url: "https://images.unsplash.com/photo-1556155092-490a1ba16284"
   alt: "Photographer reviewing business documents at desk"
   credit: "Unsplash Photographer"
+links:
+  topic: "/topics/photography-business-basics"
+  related_posts: ["/posts/photography-business-plan", "/posts/photography-insurance-basics"]
+  related_articles: ["/articles/best-books-for-newborn-photographers"]
 faq:
   - question: "Do I need a business license for photography?"
     answer: "Yes, most jurisdictions require a business license for professional photography services, even if you're operating from home."
@@ -33,7 +37,9 @@ schema:
 
 Starting a photography business requires proper licensing and permits. This guide walks you through everything you need to know about obtaining your photography business license.
 
-## Understanding Photography Business Licenses
+## Understanding Photography Business Licensing
+
+Before diving into the specifics of business permits, it's essential to understand the broader context of the photography business. Whether you're focusing on newborn photography books for specialized training or studying general business basics and photography contracts, having the proper photography business license is essential for operating legally.
 
 Before you can legally operate your photography business, you'll need several types of licenses and permits:
 

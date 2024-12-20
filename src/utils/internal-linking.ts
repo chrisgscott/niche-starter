@@ -36,24 +36,37 @@ export class InternalLinker {
     maxLinksPerKeyword = 1,
     maxLinksPerParagraph = 2
   ) {
+    console.log('InternalLinker constructor called with:', { currentUrl, maxLinksPerKeyword, maxLinksPerParagraph });
     this.currentUrl = currentUrl;
     this.maxLinksPerKeyword = maxLinksPerKeyword;
     this.maxLinksPerParagraph = maxLinksPerParagraph;
     
     // Load internal links data
     const linksPath = path.join(process.cwd(), 'src/content/internal_links.json');
-    this.links = JSON.parse(readFileSync(linksPath, 'utf-8'));
+    console.log('Loading internal links from:', linksPath);
+    try {
+      this.links = JSON.parse(readFileSync(linksPath, 'utf-8'));
+      console.log('Loaded internal links:', {
+        keywordCount: Object.keys(this.links.keywords).length,
+        urlCount: Object.keys(this.links.urls).length
+      });
+    } catch (error) {
+      console.error('Error loading internal links:', error);
+      this.links = { keywords: {}, urls: {} };
+    }
   }
 
   /**
    * Add internal links to a paragraph of text
    */
   public addLinks(text: string): string {
+    console.log('InternalLinker.addLinks called with text:', text.substring(0, 100) + '...');
     let result = text;
     let linksAdded = 0;
     
     // Find all possible links for this paragraph
     const suggestions = this.findLinkSuggestions(text);
+    console.log('Link suggestions found:', suggestions);
     
     // Sort by keyword length (longer first) to prevent nested links
     suggestions.sort((a, b) => b.keyword.length - a.keyword.length);
@@ -61,27 +74,37 @@ export class InternalLinker {
     // Process each suggestion
     for (const suggestion of suggestions) {
       // Skip if we've reached the max links for this paragraph
-      if (linksAdded >= this.maxLinksPerParagraph) break;
+      if (linksAdded >= this.maxLinksPerParagraph) {
+        console.log('Max links per paragraph reached:', this.maxLinksPerParagraph);
+        break;
+      }
       
       // Skip if we've already used this URL too many times
-      if (this.shouldSkipLink(suggestion.url)) continue;
+      if (this.shouldSkipLink(suggestion.url)) {
+        console.log('Skipping link due to max usage:', suggestion.url);
+        continue;
+      }
       
       // Skip if it's the current page
-      if (suggestion.url === this.currentUrl) continue;
+      if (suggestion.url === this.currentUrl) {
+        console.log('Skipping link to current page:', suggestion.url);
+        continue;
+      }
       
-      const title = this.links.urls[suggestion.url]?.title || suggestion.keyword;
-      const linkText = `<a href="${suggestion.url}" class="internal-link">${title}</a>`;
+      // Use the matched keyword text as the link text, not the title
+      const linkText = `<a href="${suggestion.url}" class="internal-link">${suggestion.keyword}</a>`;
       
       // Replace the keyword with the link, but only once per keyword
-      result = result.replace(
-        new RegExp(`\\b${suggestion.keyword}\\b`, 'i'),
-        linkText
-      );
-      
-      this.usedLinks.add(suggestion.url);
-      linksAdded++;
+      const regex = new RegExp(`\\b${suggestion.keyword}\\b`, 'i');
+      if (regex.test(result)) {
+        console.log('Adding link:', { keyword: suggestion.keyword, url: suggestion.url });
+        result = result.replace(regex, linkText);
+        this.usedLinks.add(suggestion.url);
+        linksAdded++;
+      }
     }
     
+    console.log('Final text after adding links:', result.substring(0, 100) + '...');
     return result;
   }
 
@@ -89,12 +112,14 @@ export class InternalLinker {
    * Find all possible link suggestions in a text
    */
   private findLinkSuggestions(text: string): LinkSuggestion[] {
+    console.log('Finding link suggestions for text:', text.substring(0, 100) + '...');
     const suggestions: LinkSuggestion[] = [];
     
     for (const [keyword, links] of Object.entries(this.links.keywords)) {
       // Case-insensitive search for the keyword
       const regex = new RegExp(`\\b${keyword}\\b`, 'gi');
       if (regex.test(text)) {
+        console.log('Found keyword match:', keyword);
         // Add primary link
         suggestions.push({
           keyword,
@@ -113,6 +138,7 @@ export class InternalLinker {
       }
     }
     
+    console.log('Total suggestions found:', suggestions.length);
     return suggestions;
   }
 

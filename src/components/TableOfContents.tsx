@@ -12,12 +12,14 @@ interface TableOfContentsProps {
   items: TOCItem[];
   activeColor?: string;
   className?: string;
+  hasFaq?: boolean;
 }
 
 export function TableOfContents({ 
   items = [], 
   activeColor = 'indigo', 
-  className = '' 
+  className = '',
+  hasFaq = false
 }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
   const [activeH2Id, setActiveH2Id] = useState<string>('');

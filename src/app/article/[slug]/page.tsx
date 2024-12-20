@@ -6,18 +6,17 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Metadata } from 'next';
 import { InternalLinker } from '@/utils/internal-linking';
-import { getContentMetadata, getAllTopics, getTopicData, getCTAConfig } from '@/utils/content';
+import { getAllTopics, getTopicData } from '@/utils/content';
 import { getThemeColors } from '@/utils/theme';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
 import { FAQ } from '@/components/FAQ';
 import { Breadcrumb } from '@/components/Breadcrumb';
-import { Schema, ThemeColor } from '@/types/schema';
+import { Schema } from '@/types/schema';
 import { Calendar, Clock } from 'lucide-react';
 import { ContentSidebar } from '@/components/ContentSidebar';
 import { getSiteWideCTA } from '@/utils/content';
-import { StickyCallToAction } from '@/components/cta/StickyCallToAction';
 
 interface ArticleProps {
   params: { slug: string };
@@ -34,10 +33,6 @@ function getReadingTime(content: string): string {
   const wordCount = content.trim().split(/\s+/).length;
   const minutes = Math.ceil(wordCount / wordsPerMinute);
   return `${minutes} min read`;
-}
-
-function titleToSlug(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
 async function getArticleData(slug: string): Promise<{ data: Schema; content: string }> {
@@ -89,7 +84,14 @@ export default async function Article({ params }: ArticleProps) {
 
   const components: Components = {
     p: ({ children }) => {
-      return <p className="mb-4 leading-relaxed">{linker.processText(String(children))}</p>;
+      const text = String(children);
+      console.log('Article page rendering paragraph:', text.substring(0, 100) + '...');
+      return (
+        <p 
+          className="mb-4 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: linker.addLinks(text) }}
+        />
+      );
     },
     h2: ({ children }) => {
       const id = String(children).toLowerCase().replace(/[^a-z0-9]+/g, '-');

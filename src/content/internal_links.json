@@ -1,65 +1,285 @@
 {
   "keywords": {
-    "home office": {
-      "primary": "/topic/home-office-setup",
+    "photography business": {
+      "primary": "/topic/photography-business-basics",
       "related": [
-        "/post/choose-perfect-desk",
-        "/post/ergonomic-chair-selection",
-        "/article/best-home-office-chairs"
+        "/topic/photography-equipment-essentials",
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing",
+        "/post/studio-lighting-guide",
+        "/article/best-cameras-for-beginners"
       ]
     },
-    "office desk": {
-      "primary": "/post/choose-perfect-desk",
+    "photography license": {
+      "primary": "/topic/photography-business-basics",
+      "related": []
+    },
+    "photography pricing": {
+      "primary": "/topic/photography-business-basics",
       "related": [
-        "/topic/home-office-setup",
-        "/post/ergonomic-chair-selection"
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing",
+        "/article/photography-pricing-calculator"
       ]
     },
-    "ergonomic chair": {
-      "primary": "/post/ergonomic-chair-selection",
+    "photography contracts": {
+      "primary": "/topic/photography-business-basics",
+      "related": []
+    },
+    "business basics": {
+      "primary": "/topic/photography-business-basics",
+      "related": []
+    },
+    "photography equipment": {
+      "primary": "/topic/photography-equipment-essentials",
       "related": [
-        "/topic/home-office-setup",
-        "/article/best-home-office-chairs"
+        "/post/studio-lighting-guide",
+        "/article/best-cameras-for-beginners"
       ]
+    },
+    "camera gear": {
+      "primary": "/topic/photography-equipment-essentials",
+      "related": [
+        "/article/best-cameras-for-beginners"
+      ]
+    },
+    "lighting equipment": {
+      "primary": "/topic/photography-equipment-essentials",
+      "related": [
+        "/post/studio-lighting-guide"
+      ]
+    },
+    "photography studio setup": {
+      "primary": "/topic/photography-equipment-essentials",
+      "related": []
+    },
+    "photography packages": {
+      "primary": "/topic/photography-pricing-guide",
+      "related": [
+        "/post/photography-package-pricing",
+        "/article/photography-pricing-calculator"
+      ]
+    },
+    "session fees": {
+      "primary": "/topic/photography-pricing-guide",
+      "related": [
+        "/post/photography-package-pricing",
+        "/article/photography-pricing-calculator"
+      ]
+    },
+    "photography rates": {
+      "primary": "/topic/photography-pricing-guide",
+      "related": [
+        "/article/photography-pricing-calculator"
+      ]
+    },
+    "photography business license": {
+      "primary": "/post/photography-business-license",
+      "related": []
+    },
+    "photographer licensing": {
+      "primary": "/post/photography-business-license",
+      "related": []
+    },
+    "business permits": {
+      "primary": "/post/photography-business-license",
+      "related": []
+    },
+    "photography legal requirements": {
+      "primary": "/post/photography-business-license",
+      "related": []
+    },
+    "pricing strategy": {
+      "primary": "/post/photography-package-pricing",
+      "related": []
+    },
+    "studio setup": {
+      "primary": "/post/studio-lighting-guide",
+      "related": []
+    },
+    "studio lighting": {
+      "primary": "/post/studio-lighting-guide",
+      "related": []
+    },
+    "newborn photography books": {
+      "primary": "/article/best-books-for-newborn-photographers",
+      "related": []
+    },
+    "baby photography books": {
+      "primary": "/article/best-books-for-newborn-photographers",
+      "related": []
+    },
+    "newborn photography education": {
+      "primary": "/article/best-books-for-newborn-photographers",
+      "related": []
+    },
+    "newborn photography guides": {
+      "primary": "/article/best-books-for-newborn-photographers",
+      "related": []
+    },
+    "beginner cameras": {
+      "primary": "/article/best-cameras-for-beginners",
+      "related": []
+    },
+    "camera buying guide": {
+      "primary": "/article/best-cameras-for-beginners",
+      "related": []
+    },
+    "pricing calculator": {
+      "primary": "/article/photography-pricing-calculator",
+      "related": []
     }
   },
   "urls": {
-    "/topic/home-office-setup": {
-      "title": "Complete Home Office Setup Guide",
+    "/topic/photography-business-basics": {
+      "title": "Photography Business Basics",
       "type": "topic",
-      "keywords": ["home office", "workspace design", "office setup"],
+      "keywords": [
+        "photography business",
+        "photography license",
+        "photography pricing",
+        "photography contracts",
+        "business basics"
+      ],
       "outbound": [
-        "/post/choose-perfect-desk",
-        "/post/ergonomic-chair-selection",
-        "/article/best-home-office-chairs"
+        "/topic/photography-equipment-essentials",
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing",
+        "/post/studio-lighting-guide",
+        "/article/best-cameras-for-beginners",
+        "/article/photography-pricing-calculator"
       ]
     },
-    "/post/choose-perfect-desk": {
-      "title": "How to Choose the Perfect Desk for Your Home Office",
+    "/topic/photography-equipment-essentials": {
+      "title": "Essential Photography Equipment Guide",
+      "type": "topic",
+      "keywords": [
+        "photography equipment",
+        "camera gear",
+        "photography business",
+        "lighting equipment",
+        "photography studio setup"
+      ],
+      "outbound": [
+        "/topic/photography-business-basics",
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing",
+        "/post/studio-lighting-guide",
+        "/article/best-cameras-for-beginners"
+      ]
+    },
+    "/topic/photography-pricing-guide": {
+      "title": "Photography Pricing Guide: How to Price Your Services",
+      "type": "topic",
+      "keywords": [
+        "photography pricing",
+        "photography packages",
+        "photography business",
+        "session fees",
+        "photography rates"
+      ],
+      "outbound": [
+        "/topic/photography-business-basics",
+        "/topic/photography-equipment-essentials",
+        "/post/photography-package-pricing",
+        "/post/studio-lighting-guide",
+        "/article/best-cameras-for-beginners",
+        "/article/photography-pricing-calculator"
+      ]
+    },
+    "/post/photography-business-license": {
+      "title": "Photography Business License Guide: Requirements & Steps",
       "type": "post",
-      "keywords": ["office desk", "desk selection", "workspace furniture"],
+      "keywords": [
+        "photography business license",
+        "photographer licensing",
+        "business permits",
+        "photography legal requirements"
+      ],
       "outbound": [
-        "/topic/home-office-setup",
-        "/post/ergonomic-chair-selection",
-        "/article/best-home-office-chairs"
+        "/topic/photography-business-basics"
       ]
     },
-    "/post/ergonomic-chair-selection": {
-      "title": "How to Select the Perfect Ergonomic Office Chair",
+    "/post/photography-package-pricing": {
+      "title": "How to Create Photography Packages That Sell",
       "type": "post",
-      "keywords": ["ergonomic chair", "office chair", "seating"],
+      "keywords": [
+        "photography packages",
+        "photography pricing",
+        "session fees",
+        "photography business",
+        "pricing strategy"
+      ],
       "outbound": [
-        "/topic/home-office-setup",
-        "/post/choose-perfect-desk",
-        "/article/best-home-office-chairs"
+        "/topic/photography-business-basics",
+        "/topic/photography-equipment-essentials",
+        "/topic/photography-pricing-guide",
+        "/post/studio-lighting-guide",
+        "/article/best-cameras-for-beginners",
+        "/article/photography-pricing-calculator"
       ]
     },
-    "/article/best-home-office-chairs": {
-      "title": "Best Home Office Chairs for Every Budget in 2024",
+    "/post/studio-lighting-guide": {
+      "title": "Studio Lighting Setup: Essential Guide for Photographers",
+      "type": "post",
+      "keywords": [
+        "lighting equipment",
+        "studio setup",
+        "photography equipment",
+        "studio lighting",
+        "photography business"
+      ],
+      "outbound": [
+        "/topic/photography-business-basics",
+        "/topic/photography-equipment-essentials",
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing",
+        "/article/best-cameras-for-beginners"
+      ]
+    },
+    "/article/best-books-for-newborn-photographers": {
+      "title": "Best Books for Newborn Photographers in 2024",
       "type": "article",
-      "keywords": ["office chairs", "ergonomic chairs", "chair reviews"],
+      "keywords": [
+        "newborn photography books",
+        "baby photography books",
+        "newborn photography education",
+        "newborn photography guides"
+      ],
+      "outbound": []
+    },
+    "/article/best-cameras-for-beginners": {
+      "title": "Best Cameras for Beginning Photographers in 2024",
+      "type": "article",
+      "keywords": [
+        "camera gear",
+        "photography equipment",
+        "beginner cameras",
+        "photography business",
+        "camera buying guide"
+      ],
       "outbound": [
-        "/topic/home-office-setup"
+        "/topic/photography-business-basics",
+        "/topic/photography-equipment-essentials",
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing",
+        "/post/studio-lighting-guide"
+      ]
+    },
+    "/article/photography-pricing-calculator": {
+      "title": "Photography Pricing Calculator: Determine Your Rates",
+      "type": "article",
+      "keywords": [
+        "photography pricing",
+        "pricing calculator",
+        "photography rates",
+        "photography packages",
+        "session fees"
+      ],
+      "outbound": [
+        "/topic/photography-business-basics",
+        "/topic/photography-pricing-guide",
+        "/post/photography-package-pricing"
       ]
     }
   }

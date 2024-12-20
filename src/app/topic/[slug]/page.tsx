@@ -140,10 +140,13 @@ export default async function Topic({ params }: TopicProps) {
   // Custom components for ReactMarkdown
   const components: Components = {
     p: ({ children }) => {
+      const text = String(children);
+      console.log('Topic page rendering paragraph:', text.substring(0, 100) + '...');
       return (
-        <p className="mb-4 leading-relaxed">
-          {children}
-        </p>
+        <p 
+          className="mb-4 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: linker.addLinks(text) }}
+        />
       );
     },
     a: ({ href, children }) => {

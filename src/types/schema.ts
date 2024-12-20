@@ -39,8 +39,8 @@ export interface Schema {
   };
   image?: ImageData;
   faq?: FAQItem[];
-  type: string;
-  datePublished: string;
+  type?: string;  // Make type optional since not all content needs it
+  datePublished?: string;
   dateModified?: string;
   steps?: HowToStep[];
   items?: string[];

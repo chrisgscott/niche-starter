@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Download, Mail, ExternalLink, Gift, BookOpen } from 'lucide-react';
 import { CTAConfig } from './types';
 
 interface EmailCollectionFormProps {
@@ -7,6 +7,15 @@ interface EmailCollectionFormProps {
   className?: string;
   variant?: 'hero' | 'inline' | 'sticky';
 }
+
+const icons = {
+  'download': Download,
+  'mail': Mail,
+  'external': ExternalLink,
+  'gift': Gift,
+  'arrow': ArrowRight,
+  'book': BookOpen
+} as const;
 
 export const EmailCollectionForm: React.FC<EmailCollectionFormProps> = ({
   config,
@@ -75,8 +84,11 @@ export const EmailCollectionForm: React.FC<EmailCollectionFormProps> = ({
           'Sending...'
         ) : (
           <>
+            {(() => {
+              const Icon = icons[config.icon ?? 'arrow'];
+              return <Icon className="w-5 h-5" />;
+            })()}
             <span>{config.buttonText}</span>
-            <ArrowRight className="w-5 h-5" />
           </>
         )}
       </button>

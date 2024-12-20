@@ -2,7 +2,7 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Download, Mail, ExternalLink, Gift, BookOpen } from 'lucide-react';
 import { CTAConfig } from './types';
 import { EmailCollectionForm } from './EmailCollectionForm';
 
@@ -10,6 +10,15 @@ interface StickyCallToActionProps {
   config: CTAConfig;
   className?: string;
 }
+
+const icons = {
+  'download': Download,
+  'mail': Mail,
+  'external': ExternalLink,
+  'gift': Gift,
+  'arrow': ArrowRight,
+  'book': BookOpen
+} as const;
 
 export const StickyCallToAction: React.FC<StickyCallToActionProps> = ({
   config,
@@ -35,8 +44,11 @@ export const StickyCallToAction: React.FC<StickyCallToActionProps> = ({
                   w-full
                 "
               >
+                {(() => {
+                  const Icon = icons[config.icon ?? 'arrow'];
+                  return <Icon className="w-5 h-5" />;
+                })()}
                 <span>{config.buttonText}</span>
-                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </div>
@@ -83,8 +95,11 @@ export const StickyCallToAction: React.FC<StickyCallToActionProps> = ({
                 w-full
               "
             >
+              {(() => {
+                const Icon = icons[config.icon ?? 'arrow'];
+                return <Icon className="w-5 h-5" />;
+              })()}
               <span>{config.buttonText}</span>
-              <ArrowRight className="w-5 h-5" />
             </Link>
           </div>
         </div>

@@ -11,20 +11,22 @@
   - ✅ Brevo API integration
   - ✅ Configurable CTAs (email/link types)
   - ✅ Responsive form components
+  - ✅ Dynamic icon system
 
 ## Short-term Goals (v0.2.0)
 
 ### Content Management (Priority 1)
-- [ ] Content templates
-  - [ ] Topic template with required sections
-  - [ ] Post template with FAQ and schema
-  - [ ] Article template for pSEO
-- [ ] Automated content validation
-  - [ ] Schema validation for frontmatter
+- ✅ Frontmatter Schema Validation
+  - ✅ Topic schema validation
+  - ✅ Post schema validation
+  - ✅ Article schema validation
+  - ✅ Config schema validation
+- [ ] Content Validation
   - [ ] Link validation
   - [ ] Image validation
-- [ ] Content optimization
-  - [ ] Internal linking suggestions
+  - [ ] Schema.org validation
+- [ ] Content Optimization
+  - [ ] Internal linking automation
   - [ ] Keyword optimization
   - [ ] Content structure validation
 
@@ -53,20 +55,23 @@
   - [ ] Conversion tracking
 
 ### Content Generation (Priority 4)
-- [ ] CrewAI PSEO Integration
+- [ ] CrewAI Integration
   - [ ] Research Agent
     - [ ] Niche analysis capabilities
     - [ ] Long-tail keyword research
-    - [ ] Template pattern identification
-    - [ ] Variable set definition
-  - [ ] Title Builder Agent
-    - [ ] Template-based title generation
-    - [ ] Variable combination handling
-    - [ ] Title validation and filtering
+    - [ ] Topic and subtopic mapping
+    - [ ] Competition analysis
+  - [ ] Content Planning Agent
+    - [ ] Hub & Spoke structure planning
+    - [ ] Title pattern optimization
+    - [ ] Content type selection
+    - [ ] Internal linking strategy
   - [ ] Content Writer Agent
-    - [ ] Article format selection (listicle, comparison, standard)
     - [ ] SEO-optimized content generation
-    - [ ] Dynamic structure based on content type
+    - [ ] Frontmatter schema compliance
+    - [ ] Dynamic content structure
+    - [ ] FAQ generation
+    - [ ] Schema.org optimization
 
 ## Medium-term Goals (v0.3.0)
 

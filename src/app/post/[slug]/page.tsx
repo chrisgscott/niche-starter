@@ -11,14 +11,12 @@ import Image from 'next/image';
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
 import { FAQ } from '@/components/FAQ';
-import { ContentCard } from '@/components/ContentCard';
 import { Schema, ThemeColor } from '@/types/schema';
-import { Calendar, Clock, Tag } from 'lucide-react';
+import { Calendar, Clock } from 'lucide-react';
 import { findRelatedPosts } from '@/utils/posts';
-import { getContentMetadata, getTopicData, getAllTopics, getSiteWideCTA } from '@/utils/content';
+import { getTopicData, getAllTopics, getSiteWideCTA } from '@/utils/content';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { ContentSidebar } from '@/components/ContentSidebar';
-import { Markdown } from '@/lib/markdown';
 import { InlineCallToAction } from '@/components/cta';
 
 interface PostProps {
@@ -30,10 +28,6 @@ function getReadingTime(content: string): string {
   const words = content.trim().split(/\s+/).length;
   const minutes = Math.ceil(words / wordsPerMinute);
   return `${minutes} min read`;
-}
-
-function titleToSlug(title: string): string {
-  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
 }
 
 async function getPostData(slug: string): Promise<{ data: Schema; content: string }> {
@@ -140,10 +134,13 @@ export default async function Post({ params }: PostProps) {
   // Custom components for ReactMarkdown
   const components: Components = {
     p: ({ children }) => {
+      const text = String(children);
+      console.log('Post page rendering paragraph:', text.substring(0, 100) + '...');
       return (
-        <p className="mb-4 leading-relaxed">
-          {children}
-        </p>
+        <p 
+          className="mb-4 leading-relaxed"
+          dangerouslySetInnerHTML={{ __html: linker.addLinks(text) }}
+        />
       );
     },
     h2: ({ children }) => {

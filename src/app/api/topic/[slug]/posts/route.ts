@@ -4,6 +4,17 @@ import path from 'path';
 
 const POSTS_PER_PAGE = 12;
 
+interface PostData {
+  title: string;
+  description: string;
+  path: string;
+  image?: {
+    url: string;
+    alt?: string;
+  };
+  date?: string;
+}
+
 export async function GET(
   request: Request,
   { params }: { params: { slug: string } }
@@ -13,14 +24,27 @@ export async function GET(
   const offset = (page - 1) * POSTS_PER_PAGE;
 
   try {
+    console.log(`[API] Getting topic metadata for slug: ${params.slug}`);
     const topic = await getContentMetadata('topics', params.slug);
+    if (!topic) {
+      console.log(`[API] Topic not found: ${params.slug}`);
+      return NextResponse.json({ error: 'Topic not found' }, { status: 404 });
+    }
+
     const postSlugs = topic.data.links?.posts || [];
+    console.log(`[API] Found post slugs:`, postSlugs);
     
     // Get all posts data
     const posts = await Promise.all(
       postSlugs.map(async (postPath: string) => {
         const slug = path.basename(postPath);
+        console.log(`[API] Getting post metadata for slug: ${slug}`);
         const post = await getContentMetadata('posts', slug);
+        if (!post) {
+          console.log(`[API] Post not found: ${slug}`);
+          return null;
+        }
+        
         return {
           title: post.data.title,
           description: post.data.description,
@@ -31,14 +55,15 @@ export async function GET(
       })
     );
 
-    // Paginate posts
-    const paginatedPosts = posts.slice(offset, offset + POSTS_PER_PAGE);
-    const hasMore = offset + POSTS_PER_PAGE < posts.length;
-
+    // Filter out any null posts and paginate
+    const validPosts = posts.filter(post => post !== null);
+    const paginatedPosts = validPosts.slice(offset, offset + POSTS_PER_PAGE);
+    
+    console.log(`[API] Returning ${paginatedPosts.length} posts`);
     return NextResponse.json({
       posts: paginatedPosts,
-      hasMore,
-      total: posts.length
+      total: validPosts.length,
+      hasMore: offset + POSTS_PER_PAGE < validPosts.length
     });
   } catch (error) {
     return NextResponse.json(

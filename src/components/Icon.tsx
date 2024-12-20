@@ -1,22 +1,26 @@
-import { 
-  AcademicCapIcon, BriefcaseIcon, CameraIcon, ChartBarIcon,
-  CogIcon, DocumentIcon, HomeIcon, LightBulbIcon,
-  PencilIcon, ShoppingBagIcon, UserGroupIcon, WrenchIcon
-} from '@heroicons/react/24/outline';
+import {
+  Briefcase,
+  Camera,
+  FileText,
+  Home,
+  Lightbulb,
+  PencilLine,
+  ShoppingBag,
+  Users,
+  Wrench
+} from 'lucide-react';
 
 const icons = {
-  'academic': AcademicCapIcon,
-  'briefcase': BriefcaseIcon,
-  'camera': CameraIcon,
-  'chart': ChartBarIcon,
-  'cog': CogIcon,
-  'document': DocumentIcon,
-  'home': HomeIcon,
-  'lightbulb': LightBulbIcon,
-  'pencil': PencilIcon,
-  'shopping': ShoppingBagIcon,
-  'users': UserGroupIcon,
-  'wrench': WrenchIcon
+  'academic': FileText,
+  'briefcase': Briefcase,
+  'camera': Camera,
+  'document': FileText,
+  'home': Home,
+  'lightbulb': Lightbulb,
+  'pencil': PencilLine,
+  'shopping': ShoppingBag,
+  'users': Users,
+  'wrench': Wrench
 };
 
 interface IconProps {
@@ -24,7 +28,7 @@ interface IconProps {
   className?: string;
 }
 
-export function Icon({ name, className = "h-6 w-6" }: IconProps) {
+export function Icon({ name, className = '' }: IconProps) {
   const IconComponent = icons[name];
-  return IconComponent ? <IconComponent className={className} /> : null;
+  return <IconComponent className={className} />;
 }

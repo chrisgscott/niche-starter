@@ -2,9 +2,18 @@
 
 import React from 'react';
 import Link from 'next/link';
-import { ArrowRight } from 'lucide-react';
+import { ArrowRight, Download, Mail, ExternalLink, Gift, BookOpen } from 'lucide-react';
 import { CTAConfig } from './types';
 import { EmailCollectionForm } from './EmailCollectionForm';
+
+const icons = {
+  'download': Download,
+  'mail': Mail,
+  'external': ExternalLink,
+  'gift': Gift,
+  'arrow': ArrowRight,
+  'book': BookOpen
+} as const;
 
 interface InlineCallToActionProps {
   config: CTAConfig;
@@ -34,8 +43,11 @@ export const InlineCallToAction: React.FC<InlineCallToActionProps> = ({
                   bg-emerald-600 text-white hover:bg-emerald-700
                 "
               >
+                {(() => {
+                  const Icon = icons[config.icon ?? 'arrow'];
+                  return <Icon className="w-5 h-5" />;
+                })()}
                 <span>{config.buttonText}</span>
-                <ArrowRight className="w-5 h-5" />
               </Link>
             </div>
           </div>

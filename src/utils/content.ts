@@ -3,7 +3,7 @@ import path from 'path';
 import matter from 'gray-matter';
 import { CTAConfig } from '@/components/cta';
 
-interface ContentMetadata {
+interface Schema {
   title: string;
   description: string;
   slug: string;
@@ -15,7 +15,14 @@ interface ContentMetadata {
   };
   links?: {
     topic?: string;
+    posts?: string[];
   };
+  date?: string;
+}
+
+interface ContentMetadata {
+  data: Schema;
+  content: string;
 }
 
 interface FooterConfig {
@@ -75,42 +82,36 @@ export function getSiteConfig(): SiteConfig {
   return data as SiteConfig;
 }
 
-export function getContentMetadata(contentPath: string): ContentMetadata | null {
+export function getContentMetadata(contentType: string, slug: string): ContentMetadata | null {
   try {
-    // Extract content type and slug from path
-    const [, type, slug] = contentPath.split('/');
-    if (!type || !slug) {
-      console.warn(`Invalid content path: ${contentPath}`);
+    const contentPath = path.join(process.cwd(), 'src/content', contentType, `${slug}.md`);
+    console.log(`[getContentMetadata] Reading file: ${contentPath}`);
+    
+    if (!fs.existsSync(contentPath)) {
+      console.log(`[getContentMetadata] File not found: ${contentPath}`);
       return null;
     }
 
-    // Convert type to plural for directory name
-    const dirName = type === 'post' ? 'posts' : 
-                   type === 'topic' ? 'topics' : 
-                   type === 'article' ? 'articles' : type;
+    const fileContents = fs.readFileSync(contentPath, 'utf8');
+    const { data, content } = matter(fileContents);
+    console.log(`[getContentMetadata] Parsed frontmatter data:`, data);
     
-    const filePath = path.join(process.cwd(), 'src/content', dirName, `${slug}.md`);
-    
-    // Check if file exists
-    if (!fs.existsSync(filePath)) {
-      console.warn(`Content file not found: ${filePath}`);
-      return null;
-    }
-
-    const markdownWithMeta = fs.readFileSync(filePath, 'utf-8');
-    const { data } = matter(markdownWithMeta);
-
-    return {
-      title: data.title,
-      description: data.description,
+    // Ensure required Schema fields are present
+    const schemaData: Schema = {
+      title: data.title || '',
+      description: data.description || '',
       slug: data.slug || slug,
+      date: data.date || new Date().toISOString(),
       keywords: data.keywords || [],
-      topic: data.topic,
-      image: data.image,
-      links: data.links
+      ...data
+    };
+    
+    return {
+      data: schemaData,
+      content
     };
   } catch (error) {
-    console.error(`Error reading content metadata for ${contentPath}:`, error);
+    console.error(`[getContentMetadata] Error reading content metadata:`, error);
     return null;
   }
 }
@@ -166,11 +167,11 @@ export function findRelatedContent(
 ): { posts: RelatedContent[], articles: RelatedContent[] } {
   try {
     // Get current post's metadata
-    const currentMeta = getContentMetadata(currentPath);
+    const currentMeta = getContentMetadata(currentPath.startsWith('/post/') ? 'posts' : 'articles', currentPath.split('/').pop() as string);
     if (!currentMeta) return { posts: [], articles: [] };
 
-    const currentKeywords = new Set(currentMeta.keywords || []);
-    const currentTopic = currentPath.startsWith('/post/') ? currentMeta.topic : null;
+    const currentKeywords = new Set(currentMeta.data.keywords || []);
+    const currentTopic = currentPath.startsWith('/post/') ? currentMeta.data.topic : null;
 
     // Get all posts and articles
     const postsDir = path.join(process.cwd(), 'src/content/posts');
@@ -180,20 +181,20 @@ export function findRelatedContent(
       .filter(file => file.endsWith('.md'))
       .map(file => {
         const slug = file.replace('.md', '');
-        const meta = getContentMetadata(`/post/${slug}`);
+        const meta = getContentMetadata('posts', slug);
         if (!meta) return null;
         
         // Calculate relevance score
-        const keywordOverlap = (meta.keywords || []).filter(k => currentKeywords.has(k)).length;
-        const sameTopic = meta.topic === currentTopic;
+        const keywordOverlap = (meta.data.keywords || []).filter(k => currentKeywords.has(k)).length;
+        const sameTopic = meta.data.topic === currentTopic;
         const score = keywordOverlap + (sameTopic ? 2 : 0);
 
         return {
           path: `/post/${slug}`,
-          title: meta.title,
-          description: meta.description,
-          keywords: meta.keywords,
-          image: meta.image,
+          title: meta.data.title,
+          description: meta.data.description,
+          keywords: meta.data.keywords,
+          image: meta.data.image,
           score
         };
       })
@@ -213,19 +214,19 @@ export function findRelatedContent(
         .filter(file => file.endsWith('.md'))
         .map(file => {
           const slug = file.replace('.md', '');
-          const meta = getContentMetadata(`/article/${slug}`);
+          const meta = getContentMetadata('articles', slug);
           if (!meta) return null;
 
           // Calculate relevance score
-          const keywordOverlap = (meta.keywords || []).filter(k => currentKeywords.has(k)).length;
+          const keywordOverlap = (meta.data.keywords || []).filter(k => currentKeywords.has(k)).length;
           const score = keywordOverlap;
 
           return {
             path: `/article/${slug}`,
-            title: meta.title,
-            description: meta.description,
-            keywords: meta.keywords,
-            image: meta.image,
+            title: meta.data.title,
+            description: meta.data.description,
+            keywords: meta.data.keywords,
+            image: meta.data.image,
             score
           };
         })
@@ -261,6 +262,8 @@ export async function getCTAConfig(): Promise<CTAConfig> {
     description: data.description,
     buttonText: data.buttonText,
     type: data.type,
+    icon: data.icon,
+    trackingId: data.trackingId,
     ...(data.type === 'link' && { href: data.href }),
     ...(data.type === 'email' && { email: data.email })
   };

@@ -48,6 +48,10 @@ Lorem ipsum dolor sit amet, consectetur adipiscing elit.
 - Consectetur adipiscing elit
 - Sed do eiusmod tempor
 
+## Essential Reading for Newborn Photographers
+
+When starting your photography business, it's crucial to understand both the creative and business aspects of your work. While these baby photography books will help with your technical skills, don't forget to also research business permits and photography contracts to ensure your business is properly established.
+
 ## Safety and Best Practices
 
 Lorem ipsum dolor sit amet, consectetur adipiscing elit.

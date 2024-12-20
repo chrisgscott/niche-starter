@@ -10,6 +10,10 @@ image:
   url: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d"
   alt: "Professional photographer reviewing client photos on computer"
   credit: "Unsplash Photographer"
+links:
+  posts: ["/posts/photography-business-license", "/posts/photography-business-plan"]
+  related_topics: ["/topics/marketing-and-branding"]
+  related_articles: ["/articles/best-books-for-newborn-photographers"]
 schema:
   type: "Article"
   datePublished: "2024-12-19"
@@ -22,6 +26,8 @@ schema:
 Starting a photography business requires more than just creative talent and technical skills. This comprehensive guide covers everything you need to know about the business side of professional photography.
 
 ## Getting Started with Your Photography Business
+
+Starting a photography business requires careful planning and understanding of legal requirements. One of the first steps is obtaining your photography business license and ensuring you have proper business permits. Many photographers also find it helpful to review newborn photography books and study photography contracts before launching their business.
 
 Before you can start booking clients, there are several essential steps you need to take to establish your photography business legally and professionally:
 

@@ -1,6 +1,6 @@
 // Define CTA types for type safety and flexibility
 export type CTAType = 'email' | 'link';
-export type CTAIcon = 'download' | 'mail' | 'external' | 'gift' | 'none';
+export type CTAIcon = 'download' | 'mail' | 'external' | 'gift' | 'arrow' | 'book';
 
 // CTA Configuration Interface
 export interface CTAConfig {
