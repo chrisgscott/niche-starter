@@ -7,17 +7,17 @@ import rehypeRaw from 'rehype-raw';
 import { Metadata } from 'next';
 import { InternalLinker } from '@/utils/internal-linking';
 import { getThemeColors } from '@/utils/theme';
-import { getContentMetadata, findRelatedContent, getAllTopics } from '@/utils/content';
+import { getContentMetadata, findRelatedContent, getAllTopics, getSiteWideCTA } from '@/utils/content';
 import { getPostsByTopic } from '@/utils/posts';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
-import { TableOfContents } from '@/components/TableOfContents';
 import { FAQ } from '@/components/FAQ';
 import { ContentCard } from '@/components/ContentCard';
 import { PostGrid } from '@/components/PostGrid';
 import { Schema, FAQItem, ThemeColor } from '@/types/schema';
 import { Briefcase, Megaphone, Camera, Aperture } from 'lucide-react';
+import { ContentSidebar } from '@/components/ContentSidebar';
 import React from 'react';
 
 const icons = {
@@ -29,6 +29,27 @@ const icons = {
 
 interface TopicProps {
   params: { slug: string };
+}
+
+interface TOCItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
+function extractTOC(content: string): TOCItem[] {
+  const headingRegex = /^(#{1,3})\s+(.+)$/gm;
+  const items: TOCItem[] = [];
+  let match;
+
+  while ((match = headingRegex.exec(content)) !== null) {
+    const level = match[1].length;
+    const text = match[2];
+    const id = text.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+    items.push({ id, text, level });
+  }
+
+  return items;
 }
 
 async function getTopicData(slug: string): Promise<{ data: Schema; content: string }> {
@@ -206,6 +227,9 @@ export default async function Topic({ params }: TopicProps) {
   // Get all topics for the footer
   const topics = getAllTopics();
 
+  // Get CTA config
+  const cta = await getSiteWideCTA();
+
   // We only need posts in the grid now
   return (
     <Layout data={data} topics={topics}>
@@ -273,18 +297,12 @@ export default async function Topic({ params }: TopicProps) {
           </div>
 
           {/* Sidebar */}
-          <aside className="md:col-span-1">
-            <div className="sticky top-24 space-y-8">
-              {/* Table of Contents */}
-              <div className="bg-white rounded-lg border border-slate-200 p-6">
-                <TableOfContents 
-                  items={[]} 
-                  activeColor={data.theme?.color || 'indigo'} 
-                  hasFaq={!!data.faq && data.faq.length > 0}
-                />
-              </div>
-            </div>
-          </aside>
+          <ContentSidebar 
+            toc={extractTOC(content)}
+            activeColor={data.theme?.color || 'indigo'}
+            hasFaq={!!data.faq && data.faq.length > 0}
+            cta={cta}
+          />
         </div>
       </div>
 

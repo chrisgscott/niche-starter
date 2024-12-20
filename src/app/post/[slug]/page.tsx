@@ -10,7 +10,6 @@ import { getThemeColors } from '@/utils/theme';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
-import { TableOfContents } from '@/components/TableOfContents';
 import { FAQ } from '@/components/FAQ';
 import { ContentCard } from '@/components/ContentCard';
 import { Schema, ThemeColor } from '@/types/schema';
@@ -18,7 +17,7 @@ import { Calendar, Clock, Tag } from 'lucide-react';
 import { findRelatedPosts } from '@/utils/posts';
 import { getContentMetadata, getTopicData, getAllTopics, getSiteWideCTA } from '@/utils/content';
 import { Breadcrumb } from '@/components/Breadcrumb';
-import { PostSidebar } from '@/components/PostSidebar';
+import { ContentSidebar } from '@/components/ContentSidebar';
 import { Markdown } from '@/lib/markdown';
 import { InlineCallToAction } from '@/components/cta';
 
@@ -383,16 +382,12 @@ export default async function Post({ params }: PostProps) {
           </div>
 
           {/* Right Column */}
-          <aside className="hidden md:block">
-            <div className="sticky top-24 space-y-8">
-              {/* Table of Contents */}
-              <PostSidebar 
-                toc={tocItems} 
-                activeColor={data.theme?.color || 'indigo'}
-                cta={cta}
-              />
-            </div>
-          </aside>
+          <ContentSidebar 
+            toc={tocItems}
+            activeColor={data.theme?.color || 'indigo'}
+            hasFaq={!!data.faq && data.faq.length > 0}
+            cta={cta}
+          />
         </div>
       </div>
     </Layout>

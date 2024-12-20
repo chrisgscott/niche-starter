@@ -18,7 +18,7 @@ interface TableOfContentsProps {
 export function TableOfContents({ 
   items = [], 
   activeColor = 'indigo', 
-  hasFaq,
+  hasFaq = false,
   className = '' 
 }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
@@ -37,15 +37,16 @@ export function TableOfContents({
           }
         });
       },
-      { rootMargin: '0px 0px -80% 0px' }
+      {
+        rootMargin: '-10% 0% -70% 0%',
+        threshold: 0.1
+      }
     );
 
-    const headings = document.querySelectorAll('h2, h3');
-    headings.forEach((heading) => observer.observe(heading));
+    // Observe all headings
+    document.querySelectorAll('h2, h3').forEach((elem) => observer.observe(elem));
 
-    return () => {
-      headings.forEach((heading) => observer.unobserve(heading));
-    };
+    return () => observer.disconnect();
   }, []);
 
   const bgColorClasses = {
@@ -53,58 +54,70 @@ export function TableOfContents({
     'emerald': 'bg-emerald-50',
     'blue': 'bg-blue-50',
     'purple': 'bg-purple-50',
+    'amber': 'bg-amber-50',
   };
 
-  const colorClasses = {
+  const textColorClasses = {
     'indigo': 'text-indigo-600',
     'emerald': 'text-emerald-600',
     'blue': 'text-blue-600',
     'purple': 'text-purple-600',
+    'amber': 'text-amber-600',
   };
 
-  const bgColor = bgColorClasses[activeColor as keyof typeof bgColorClasses] || bgColorClasses.indigo;
-  const textColor = colorClasses[activeColor as keyof typeof colorClasses] || colorClasses.indigo;
-
-  const scrollToHeading = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
-    e.preventDefault();
-    const element = document.getElementById(id);
-    if (element) {
-      element.scrollIntoView({
-        behavior: 'smooth',
-        block: 'start'
-      });
-      window.history.pushState({}, '', `#${id}`);
-    }
-  };
+  const bgColorClass = bgColorClasses[activeColor as keyof typeof bgColorClasses] || bgColorClasses.indigo;
+  const textColorClass = textColorClasses[activeColor as keyof typeof textColorClasses] || textColorClasses.indigo;
 
   return (
-    <nav className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm ${className}`}>
-      <h2 className={`${bgColor} px-4 py-2 text-lg font-semibold border-b border-gray-200 -mx-6 -mt-6 mb-4`}>
+    <div className={`bg-white rounded-lg border border-slate-200 ${className}`}>
+      <h3 className={`text-lg font-bold text-slate-900 p-4 mb-0 ${bgColorClass} border-b border-slate-200`}>
         Table of Contents
-      </h2>
-      <ul className="space-y-2">
-        {items.map((heading, index) => (
-          <li
-            key={index}
-            className={`
-              ${heading.level === 2 ? '' : 'ml-4'}
-              ${activeId === heading.id ? textColor : 'text-slate-600'}
-            `}
-          >
+      </h3>
+      <nav className="p-4 space-y-2">
+        {items.map((item, index) => {
+          const isActive = activeId === item.id;
+          const activeStyles = isActive ? `font-semibold ${textColorClass}` : 'text-slate-600 hover:text-slate-800';
+          return (
             <a
-              href={`#${heading.id}`}
-              onClick={(e) => scrollToHeading(e, heading.id)}
+              key={index}
+              href={`#${item.id}`}
+              onClick={(e) => {
+                e.preventDefault();
+                const element = document.getElementById(item.id);
+                if (element) {
+                  element.scrollIntoView({
+                    behavior: 'smooth',
+                    block: 'start'
+                  });
+                  window.history.pushState({}, '', `#${item.id}`);
+                  setActiveId(item.id); // Set active immediately on click
+                }
+              }}
               className={`
-                block text-sm py-1
-                hover:text-${activeColor}-600 transition-colors duration-200
-                ${activeId === heading.id ? 'font-medium' : ''}
+                block text-sm
+                ${item.level === 2 ? '' : 'ml-4'}
+                ${activeStyles}
+                hover:underline underline-offset-2
+                transition-colors duration-150
               `}
             >
-              {heading.text}
+              {item.text}
             </a>
-          </li>
-        ))}
-      </ul>
-    </nav>
+          );
+        })}
+        {hasFaq && (
+          <a
+            href="#common-questions"
+            className={`
+              block text-sm text-slate-900
+              hover:text-slate-600
+              hover:underline underline-offset-2
+            `}
+          >
+            Common Questions
+          </a>
+        )}
+      </nav>
+    </div>
   );
 }

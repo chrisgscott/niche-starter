@@ -6,16 +6,18 @@ import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
 import { Metadata } from 'next';
 import { InternalLinker } from '@/utils/internal-linking';
-import { getContentMetadata, getAllTopics, getTopicData } from '@/utils/content';
+import { getContentMetadata, getAllTopics, getTopicData, getCTAConfig } from '@/utils/content';
 import { getThemeColors } from '@/utils/theme';
 import Image from 'next/image';
 import Link from 'next/link';
 import { Layout } from '@/components/Layout';
-import { TableOfContents } from '@/components/TableOfContents';
 import { FAQ } from '@/components/FAQ';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { Schema, ThemeColor } from '@/types/schema';
 import { Calendar, Clock } from 'lucide-react';
+import { ContentSidebar } from '@/components/ContentSidebar';
+import { getSiteWideCTA } from '@/utils/content';
+import { StickyCallToAction } from '@/components/cta/StickyCallToAction';
 
 interface ArticleProps {
   params: { slug: string };
@@ -81,6 +83,9 @@ export default async function Article({ params }: ArticleProps) {
 
   // Get parent topic data if it exists
   const parentTopic = data.parent_topic ? getTopicData(data.parent_topic) : undefined;
+
+  // Get CTA config
+  const cta = await getSiteWideCTA();
 
   const components: Components = {
     p: ({ children }) => {
@@ -236,7 +241,7 @@ export default async function Article({ params }: ArticleProps) {
           {/* Left Column */}
           <div className="space-y-8">
             {/* Main Content */}
-            <div className="prose prose-slate prose-headings:scroll-mt-24 max-w-none">
+            <div className="prose prose-lg max-w-none prose-slate">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
@@ -251,15 +256,12 @@ export default async function Article({ params }: ArticleProps) {
           </div>
 
           {/* Right Column */}
-          <div>
-            <div className="sticky top-24 space-y-8">
-              {/* Table of Contents */}
-              <TableOfContents 
-                items={tocItems}
-                activeColor={data.theme?.color || 'indigo'}
-              />
-            </div>
-          </div>
+          <ContentSidebar 
+            toc={tocItems}
+            activeColor={data.theme?.color || 'indigo'}
+            hasFaq={!!data.faq && data.faq.length > 0}
+            cta={cta}
+          />
         </div>
       </div>
     </Layout>
