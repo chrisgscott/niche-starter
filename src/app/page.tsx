@@ -6,6 +6,8 @@ import { Layout } from '@/components/Layout';
 import { Schema, ThemeColor } from '@/types/schema';
 import { TopicCard } from '@/components/TopicCard';
 import { getPostsByTopic } from '@/utils/posts';
+import { CallToAction } from '@/components/CallToAction';
+import { getSiteWideCTA } from '@/utils/content';
 
 interface Topic {
   title: string;
@@ -68,6 +70,8 @@ export default async function Home() {
       })
   );
 
+  const businessChecklistCTA = getSiteWideCTA('content_upgrades', 'business_checklist');
+
   return (
     <Layout 
       data={home}
@@ -103,6 +107,17 @@ export default async function Home() {
           </div>
         </div>
       </div>
+
+      {/* Business Checklist CTA */}
+      {businessChecklistCTA && (
+        <div className="max-w-7xl mx-auto px-4 py-12">
+          <CallToAction 
+            config={businessChecklistCTA} 
+            variant="primary" 
+            className="w-full"
+          />
+        </div>
+      )}
 
       {/* Topics Section */}
       <div className="max-w-7xl mx-auto px-4 py-24">

@@ -42,6 +42,16 @@ schema:
 
 Starting a photography business requires careful planning and organization. Use this comprehensive checklist to ensure you've covered all essential aspects of your business setup.
 
+<CallToAction
+  variant="inline"
+  config={{
+    title: "Get Your Free Photography Business Starter Kit",
+    description: "Download our complete guide with templates, contracts, and pricing calculators to jumpstart your photography business.",
+    buttonText: "Download Now",
+    icon: "download"
+  }}
+/>
+
 ## Legal and Administrative Setup
 
 1. Choose business structure (LLC, Sole Proprietorship)

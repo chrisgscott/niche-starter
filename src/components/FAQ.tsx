@@ -11,8 +11,8 @@ export function FAQ({ items, themeColor }: FAQProps) {
   if (!items?.length) return null;
 
   return (
-    <section className="mt-12" id="frequently-asked-questions">
-      <h2 className="text-2xl font-bold mb-6 scroll-mt-24">Frequently Asked Questions</h2>
+    <section className="mt-12">
+      <h2 className="text-2xl font-bold mb-6 scroll-mt-24" id="frequently-asked-questions">Frequently Asked Questions</h2>
       <div className="space-y-8">
         {items.map((item, index) => (
           <div key={index} className="space-y-2">

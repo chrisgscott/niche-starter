@@ -18,6 +18,9 @@ import { Calendar, Clock, Tag } from 'lucide-react';
 import { findRelatedPosts } from '@/utils/posts';
 import { getContentMetadata, getTopicData, getAllTopics } from '@/utils/content';
 import { Breadcrumb } from '@/components/Breadcrumb';
+import { PostSidebar } from '@/components/PostSidebar';
+import { Markdown } from '@/lib/markdown';
+import { CallToAction } from '@/components/CallToAction';
 
 interface PostProps {
   params: { slug: string };
@@ -207,6 +210,29 @@ export default async function Post({ params }: PostProps) {
     ),
   };
 
+  // Extract headings from content for TOC
+  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
+  const matches = Array.from(content.matchAll(headingRegex));
+  
+  const tocItems = matches.map((match) => {
+    const level = match[1].length;
+    const text = match[2];
+    return {
+      level,
+      text,
+      id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-')
+    };
+  });
+
+  // Add FAQ section to TOC if it exists
+  if (data.faq && data.faq.length > 0) {
+    tocItems.push({
+      id: 'frequently-asked-questions',
+      text: 'Frequently Asked Questions',
+      level: 2,
+    });
+  }
+
   return (
     <Layout data={data} topics={topics}>
       {/* Hero Section */}
@@ -281,7 +307,7 @@ export default async function Post({ params }: PostProps) {
           {/* Left Column */}
           <div className="space-y-8">
             {/* Main Content */}
-            <div className="prose prose-slate prose-headings:scroll-mt-24 max-w-none">
+            <div className="prose prose-lg max-w-none prose-slate">
               <ReactMarkdown 
                 remarkPlugins={[remarkGfm]}
                 rehypePlugins={[rehypeRaw]}
@@ -291,8 +317,21 @@ export default async function Post({ params }: PostProps) {
               </ReactMarkdown>
             </div>
 
+            {/* Inline CTA */}
+            <CallToAction 
+              variant="inline"
+              config={{
+                title: "Free Photography Business Checklist",
+                description: "Download our comprehensive guide to launching and scaling your photography business",
+                buttonText: "Get the Checklist",
+                icon: "download"
+              }}
+            />
+
             {/* FAQ Section */}
-            {data.faq && <FAQ items={data.faq} themeColor={data.theme?.color || 'indigo'} />}
+            {data.faq && data.faq.length > 0 && (
+              <FAQ items={data.faq} themeColor={data.theme?.color || 'indigo'} />
+            )}
 
             {/* Related Posts */}
             {relatedPosts.length > 0 && (
@@ -334,13 +373,15 @@ export default async function Post({ params }: PostProps) {
           <aside className="hidden md:block">
             <div className="sticky top-24 space-y-8">
               {/* Table of Contents */}
-              <div className="bg-white rounded-lg border border-slate-200 p-6">
-                <TableOfContents 
-                  content={content} 
-                  activeColor={data.theme?.color || 'indigo'} 
-                  hasFaq={!!data.faq && data.faq.length > 0}
-                />
-              </div>
+              <PostSidebar 
+                toc={tocItems} 
+                activeColor={data.theme?.color || 'indigo'}
+                cta={{
+                  title: "Free Photography Business Checklist",
+                  description: "Download our comprehensive guide to launching and scaling your photography business",
+                  buttonText: "Get the Checklist"
+                }}
+              />
             </div>
           </aside>
         </div>

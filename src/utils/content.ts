@@ -1,6 +1,7 @@
 import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
+import { CTAConfig } from '@/components/CallToAction';
 
 interface ContentMetadata {
   title: string;
@@ -64,6 +65,19 @@ interface RelatedContent {
   image?: {
     url: string;
     alt?: string;
+  };
+}
+
+interface SiteWideCTAs {
+  site_wide_ctas: {
+    newsletter?: CTAConfig;
+    content_upgrades: Record<string, CTAConfig>;
+    affiliate: Record<string, CTAConfig>;
+  };
+  page_specific_ctas: {
+    topics: { default: CTAConfig };
+    posts: { default: CTAConfig };
+    articles: { default: CTAConfig };
   };
 }
 
@@ -236,4 +250,26 @@ export function findRelatedContent(
     console.error('Error finding related content:', error);
     return { posts: [], articles: [] };
   }
+}
+
+export function getCTAConfig(): SiteWideCTAs {
+  const ctaPath = path.join(process.cwd(), 'src/content/config/cta.md');
+  const ctaFile = fs.readFileSync(ctaPath, 'utf-8');
+  const { data } = matter(ctaFile);
+  return data as SiteWideCTAs;
+}
+
+export function getPageSpecificCTA(pageType: keyof SiteWideCTAs['page_specific_ctas']): CTAConfig {
+  const ctaConfig = getCTAConfig();
+  return ctaConfig.page_specific_ctas[pageType].default;
+}
+
+export function getSiteWideCTA(category: keyof SiteWideCTAs['site_wide_ctas'], key?: string): CTAConfig | undefined {
+  const ctaConfig = getCTAConfig();
+  
+  if (category === 'content_upgrades' || category === 'affiliate') {
+    return key ? ctaConfig.site_wide_ctas[category][key] : undefined;
+  }
+  
+  return ctaConfig.site_wide_ctas[category];
 }

@@ -88,8 +88,6 @@ export default async function Topic({ params }: TopicProps) {
     amber: 'prose-amber'
   };
 
-  const themeClass = proseThemeClasses[data.theme?.color || 'indigo'];
-
   const linkClasses: Record<ThemeColor, string> = {
     blue: 'text-blue-600 hover:text-blue-800',
     green: 'text-green-600 hover:text-green-800',
@@ -280,8 +278,9 @@ export default async function Topic({ params }: TopicProps) {
               {/* Table of Contents */}
               <div className="bg-white rounded-lg border border-slate-200 p-6">
                 <TableOfContents 
-                  content={content} 
+                  items={[]} 
                   activeColor={data.theme?.color || 'indigo'} 
+                  hasFaq={!!data.faq && data.faq.length > 0}
                 />
               </div>
             </div>

@@ -1,69 +1,22 @@
 'use client';
 
 import { useEffect, useState } from 'react';
-import { ThemeColor } from '@/types/schema';
 
-interface Heading {
+interface TOCItem {
   id: string;
   text: string;
   level: number;
 }
 
 interface TableOfContentsProps {
-  content: string;
-  activeColor: ThemeColor;
+  items: TOCItem[];
+  activeColor?: string;
   hasFaq?: boolean;
+  className?: string;
 }
 
-const colorClasses: Record<ThemeColor, string> = {
-  blue: 'text-blue-600',
-  green: 'text-green-600',
-  purple: 'text-purple-600',
-  orange: 'text-orange-600',
-  indigo: 'text-indigo-600',
-  amber: 'text-amber-600'
-};
-
-const bgColorClasses: Record<ThemeColor, string> = {
-  blue: 'bg-blue-50',
-  green: 'bg-green-50',
-  purple: 'bg-purple-50',
-  orange: 'bg-orange-50',
-  indigo: 'bg-indigo-50',
-  amber: 'bg-amber-50'
-};
-
-export function TableOfContents({ content, activeColor, hasFaq }: TableOfContentsProps) {
-  const [headings, setHeadings] = useState<Heading[]>([]);
+export function TableOfContents({ items, activeColor = 'indigo', hasFaq, className = '' }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
-
-  useEffect(() => {
-    // Extract headings from markdown content
-    const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-    const matches = Array.from(content.matchAll(headingRegex));
-    
-    const extractedHeadings = matches.map((match) => {
-      const level = match[1].length;
-      const text = match[2];
-      const id = text
-        .toLowerCase()
-        .replace(/[^a-z0-9]+/g, '-')
-        .replace(/(^-|-$)/g, '');
-      
-      return { id, text, level };
-    });
-
-    // Add FAQ section if it exists
-    if (hasFaq) {
-      extractedHeadings.push({
-        id: 'frequently-asked-questions',
-        text: 'Frequently Asked Questions',
-        level: 2
-      });
-    }
-    
-    setHeadings(extractedHeadings);
-  }, [content, hasFaq]);
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -74,29 +27,32 @@ export function TableOfContents({ content, activeColor, hasFaq }: TableOfContent
           }
         });
       },
-      {
-        rootMargin: '-80px 0% -80% 0%',
-        threshold: 0
-      }
+      { rootMargin: '0px 0px -80% 0px' }
     );
 
-    // Observe all section headings
-    headings.forEach(({ id }) => {
-      const element = document.getElementById(id);
-      if (element) {
-        observer.observe(element);
-      }
-    });
+    const headings = document.querySelectorAll('h2, h3, h4');
+    headings.forEach((heading) => observer.observe(heading));
 
     return () => {
-      headings.forEach(({ id }) => {
-        const element = document.getElementById(id);
-        if (element) {
-          observer.unobserve(element);
-        }
-      });
+      headings.forEach((heading) => observer.unobserve(heading));
     };
-  }, [headings]);
+  }, []);
+
+  const bgColorClasses = {
+    'indigo': 'bg-indigo-50',
+    'emerald': 'bg-emerald-50',
+    'blue': 'bg-blue-50',
+    'purple': 'bg-purple-50',
+  };
+
+  const colorClasses = {
+    'indigo': 'text-indigo-600',
+    'emerald': 'text-emerald-600',
+    'blue': 'text-blue-600',
+    'purple': 'text-purple-600',
+  };
+
+  const bgColor = bgColorClasses[activeColor] || 'bg-indigo-50';
 
   const scrollToHeading = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -110,25 +66,24 @@ export function TableOfContents({ content, activeColor, hasFaq }: TableOfContent
     }
   };
 
-  if (!headings.length) return null;
-  
-  const bgColor = bgColorClasses[activeColor] || 'bg-indigo-50';
-
   return (
-    <nav className="w-full">
-      <h2 className={`${bgColor} px-4 py-2 text-lg font-semibold border-b border-slate-200 -mx-6 -mt-6 mb-4`}>
+    <nav className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm overflow-hidden ${!className?.includes('not-sticky') ? 'sticky top-4' : ''} ${className}`}>
+      <h2 className={`${bgColor} px-4 py-2 text-lg font-semibold border-b border-gray-200 -mx-6 -mt-6 mb-4`}>
         Table of Contents
       </h2>
       <ul className="space-y-2">
-        {headings.map((heading) => (
+        {items.map((heading, index) => (
           <li
-            key={heading.id}
-            style={{ paddingLeft: `${Math.max(0, (heading.level - 2) * 0.75)}rem` }}
+            key={index}
+            className={`
+              ${heading.level === 2 ? '' : 'ml-4'}
+              ${activeId === heading.id ? 'text-primary-600 font-medium' : 'text-gray-600'}
+            `}
           >
             <a
               href={`#${heading.id}`}
               onClick={(e) => scrollToHeading(e, heading.id)}
-              className={`block transition-colors ${
+              className={`block hover:text-primary-700 transition-colors duration-150 ${
                 activeId === heading.id
                   ? colorClasses[activeColor]
                   : 'text-slate-600 hover:text-slate-900'
