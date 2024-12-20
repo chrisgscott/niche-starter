@@ -9,14 +9,21 @@ These fields are required across all content types:
 title: string           # The page title
 description: string     # Meta description for SEO
 slug: string           # URL-friendly identifier
-keywords: string[]     # SEO keywords
-image?:                # Optional but recommended for all content types
+keywords: string[]     # SEO keywords (used for internal linking)
+image:                 # Required for all content types
   url: string         # Full URL to image (preferably Unsplash)
   alt: string         # Descriptive alt text
   credit: string      # Photographer or image credit
-topic?: string        # Topic slug (required for posts and articles)
-theme?:               # Visual styling configuration
-  color: string       # Base color (blue, green, purple, orange, indigo)
+theme?:               # Visual styling configuration (mainly for topics)
+  color: string      # Base color (blue, green, purple, orange, indigo, amber)
+  icon?: string      # Lucide icon name (briefcase, megaphone, camera, aperture)
+schema:              # SEO schema configuration
+  type: string      # "Article", "HowTo", "ItemList", "WebSite"
+  datePublished?: string
+  dateModified?: string
+  author?:
+    "@type": "Person"
+    name: string
 ```
 
 ## Homepage
@@ -55,118 +62,88 @@ schema:
 ```
 
 ## Topic Pages (Hub)
-Used for main topic pages that link to related posts and articles. These are the top-level "Library Hub" pages that organize content into major categories.
+Used for main topic pages that link to related posts and articles. These are the top-level content organizers.
 
 ```yaml
 title: string           # Topic title
 description: string     # Topic description
 slug: string           # URL-friendly identifier
 theme:                 # Visual styling configuration
-  color: string        # Base color (blue, green, purple, orange)
-  icon: string         # Lucide icon name (briefcase, megaphone, camera, aperture)
+  color: string        # Base color (blue, green, purple, orange, indigo, amber)
+  icon: string         # Lucide icon name
+keywords: string[]     # SEO keywords (used for internal linking)
 image:
   url: string         # Unsplash image URL
   alt: string         # Descriptive alt text
-  credit?: string     # Optional image credit
-keywords: string[]    # SEO keywords
+  credit: string      # Image credit
 schema:
   type: "Article"     # Always Article for topic pages
-  datePublished?: string
-  dateModified?: string
-  author?:
+  datePublished: string
+  dateModified: string
+  author:
     "@type": "Person"
     name: string
 ```
 
-## Post Pages
-Used for content pages that belong to a topic.
+## Post Pages (Spoke)
+Used for content pages that belong to a topic. These are the main content pieces.
 
 ```yaml
 title: string          # Post title
 description: string    # Post description
 slug: string          # URL-friendly identifier
 date: string          # Publication date (YYYY-MM-DD)
-parent_topic: string  # Topic slug this post belongs to (e.g., "photography-business-basics")
-keywords: string[]    # SEO keywords and for finding related content
+parent_topic: string  # Topic slug this post belongs to (used for hierarchy)
+keywords: string[]    # SEO keywords (used for internal linking)
 image:
   url: string         # Unsplash image URL
   alt: string         # Descriptive alt text
   credit: string      # Photographer credit
-faq?:                 # Optional FAQ section for SEO
+faq?:                 # Optional FAQ section
   - question: string
     answer: string
-schema:               # SEO schema configuration
-  type: "HowTo"      # or "Article", "List", etc.
+schema:
+  type: "HowTo"      # or "Article"
   datePublished: string
   dateModified: string
-  steps?:            # Required for HowTo schema
-    - text: string
-  author?:
-    "@type": "Person"
-    name: string
-```
-
-## Article Pages (Individual Content)
-Used for specific, detailed content pieces. These are the leaf nodes of your content tree.
-
-```yaml
-title: string          # Article title
-description: string    # Article description
-slug: string          # URL-friendly identifier
-parent_topic?: string # Optional topic slug this article belongs to
-keywords: string[]    # SEO keywords
-parent_post: string         # Sub-topic URL (e.g., "/post/workplace-wellness")
-breadcrumb:                 # Navigation path
-  - title: "HR Library"
-    url: "/topic/hr-library"
-  - title: "Workplace Wellness"
-    url: "/post/workplace-wellness"
-  - title: "Best Office Snacks"
-    url: "/article/best-office-snacks"
-links:
-  topic: string            # Parent topic URL
-  post: string            # Parent post (sub-topic) URL
-topic: string             # Topic slug (required)
-schema:
-  type: "ItemList"
-  items:
-    - "@type": "ListItem"
-      position: number
-      name: string
-      description: string
+  steps?:            # Required for HowTo type
+    - text: string   # Step description
 ```
 
 ## Article Pages (Programmatic SEO)
-Used for programmatically generated content pages that follow a template structure.
+Used for AI-generated content pages targeting specific long-tail keywords. While CrewAI is provided with title patterns and required frontmatter structure, it has the flexibility to optimize content and titles for SEO effectiveness.
 
 ```yaml
-title: string          # Article title
-description: string    # Article description
-slug: string          # URL-friendly identifier
-parent_topic?: string # Optional topic slug this article belongs to
-keywords: string[]    # SEO keywords
-template:             # Template information for pSEO
-  pattern: string     # The template pattern used (e.g., "Best {contentType} for {photographyType} Photographers")
-  variables:          # Variables used to generate this article
-    contentType: string    # E.g., "Books", "Software", "Online Courses"
-    photographyType: string # E.g., "Portrait", "Wedding", "Newborn"
+title: string          # AI-optimized title, initially based on patterns like "Best X for Y"
+description: string    # SEO-optimized description of the article content
+slug: string          # URL-friendly identifier derived from the title
+keywords: string[]    # Carefully selected keywords for SEO and internal linking
+topic: string         # Parent topic slug (used for hierarchy)
 image:
   url: string         # Unsplash image URL
-  alt: string         # Descriptive alt text
-  credit: string      # Photographer credit
+  alt: string         # Descriptive alt text optimized for SEO
+  credit: string      # Image credit
 theme:
-  color: string       # Base color (blue, green, purple, orange, indigo)
-faq?:                 # Optional FAQ section for SEO
-  - question: string
-    answer: string
-schema:               # SEO schema configuration
-  type: "List"       # Usually "List" for pSEO articles
-  items:             # List items for schema
-    - name: string
-      description: string
+  color: string       # Base color (blue, green, purple, orange, indigo, amber)
+faq:                  # SEO-enhancing FAQ section
+  - question: string  # Common user questions about the topic
+    answer: string    # Detailed, value-adding answers
+schema:
+  type: "ItemList"    # Schema type for resource/recommendation lists
+  items:             # Curated list of resources or recommendations
+    - name: string           # Item name/title
+      description: string    # Detailed item description
 ```
 
-### Common Template Patterns
+Note: While CrewAI is provided with structured patterns for generating titles and ensuring consistent frontmatter, it has the freedom to:
+1. Optimize titles and content for SEO effectiveness
+2. Generate unique, high-quality content without template constraints
+3. Adapt content structure based on the specific topic and user intent
+4. Ensure each article provides unique value to avoid duplicate content issues
+
+The content hierarchy and internal linking are managed through the `topic` field and the `InternalLinker` class using the `keywords` field.
+
+### Common Title Patterns
 Our articles typically follow these patterns:
 1. `"Best {contentType} for {photographyType} Photographers"`
    - Used for resource recommendations
@@ -270,3 +247,5 @@ When generating content via CrewAI:
 3. Validate URLs and image sources
 4. Generate appropriate schema-specific data (steps, list items, etc.)
 5. Include FAQ sections where appropriate
+
+Note: Internal linking between content is handled automatically by the `InternalLinker` class based on the `keywords` field and the content hierarchy established through `topic` and `parent_topic` relationships. The actual link relationships are stored in `internal_links.json`.

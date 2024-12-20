@@ -197,10 +197,16 @@ export function findRelatedContent(
           score
         };
       })
-      .filter(post => post && post.path !== currentPath)
-      .sort((a, b) => b!.score - a!.score)
+      .filter((post): post is NonNullable<typeof post> => post !== null && post.path !== currentPath)
+      .sort((a, b) => b.score - a.score)
       .slice(0, limit)
-      .map(({ path, title, description, keywords, image }) => ({ path, title, description, keywords, image }));
+      .map(({ path, title, description, keywords, image }) => ({ 
+        path, 
+        title, 
+        description, 
+        keywords, 
+        image 
+      }));
 
     const articles = fs.existsSync(articlesDir) ? 
       fs.readdirSync(articlesDir)
@@ -223,10 +229,16 @@ export function findRelatedContent(
             score
           };
         })
-        .filter(article => article && article.path !== currentPath)
-        .sort((a, b) => b!.score - a!.score)
+        .filter((article): article is NonNullable<typeof article> => article !== null && article.path !== currentPath)
+        .sort((a, b) => b.score - a.score)
         .slice(0, limit)
-        .map(({ path, title, description, keywords, image }) => ({ path, title, description, keywords, image }))
+        .map(({ path, title, description, keywords, image }) => ({ 
+          path, 
+          title, 
+          description, 
+          keywords, 
+          image 
+        }))
       : [];
 
     return {

@@ -45,6 +45,15 @@ export const themeColors = {
     hover: 'hover:bg-indigo-200',
     border: 'border-indigo-200',
     stroke: 'stroke-indigo-600'
+  },
+  amber: {
+    light: 'bg-amber-100',
+    dark: 'bg-amber-600',
+    text: 'text-amber-600',
+    textDark: 'text-amber-700',
+    hover: 'hover:bg-amber-200',
+    border: 'border-amber-200',
+    stroke: 'stroke-amber-600'
   }
 } as const;
 

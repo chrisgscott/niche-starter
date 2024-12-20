@@ -8,7 +8,7 @@ const config: Config = {
   ],
   theme: {
     extend: {
-      typography: ({ theme }) => ({
+      typography: ({ theme }: { theme: (path: string) => string }) => ({
         DEFAULT: {
           css: {
             maxWidth: 'none',

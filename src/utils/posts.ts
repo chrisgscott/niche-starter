@@ -99,8 +99,8 @@ export async function findRelatedPosts(
     }
     
     // Score based on shared keywords
-    const sharedKeywords = post.keywords.filter(keyword => 
-      currentPost.keywords.includes(keyword)
+    const sharedKeywords = (post.keywords || []).filter(keyword => 
+      (currentPost.keywords || []).includes(keyword)
     );
     score += sharedKeywords.length;
     
