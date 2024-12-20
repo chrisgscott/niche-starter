@@ -15,8 +15,18 @@ interface TableOfContentsProps {
   className?: string;
 }
 
-export function TableOfContents({ items, activeColor = 'indigo', hasFaq, className = '' }: TableOfContentsProps) {
+export function TableOfContents({ 
+  items = [], 
+  activeColor = 'indigo', 
+  hasFaq,
+  className = '' 
+}: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
+
+  // If no items, don't render anything but still maintain hook order
+  if (!items?.length) {
+    return null;
+  }
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -30,7 +40,7 @@ export function TableOfContents({ items, activeColor = 'indigo', hasFaq, classNa
       { rootMargin: '0px 0px -80% 0px' }
     );
 
-    const headings = document.querySelectorAll('h2, h3, h4');
+    const headings = document.querySelectorAll('h2, h3');
     headings.forEach((heading) => observer.observe(heading));
 
     return () => {
@@ -52,7 +62,8 @@ export function TableOfContents({ items, activeColor = 'indigo', hasFaq, classNa
     'purple': 'text-purple-600',
   };
 
-  const bgColor = bgColorClasses[activeColor] || 'bg-indigo-50';
+  const bgColor = bgColorClasses[activeColor as keyof typeof bgColorClasses] || bgColorClasses.indigo;
+  const textColor = colorClasses[activeColor as keyof typeof colorClasses] || colorClasses.indigo;
 
   const scrollToHeading = (e: React.MouseEvent<HTMLAnchorElement>, id: string) => {
     e.preventDefault();
@@ -67,7 +78,7 @@ export function TableOfContents({ items, activeColor = 'indigo', hasFaq, classNa
   };
 
   return (
-    <nav className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm overflow-hidden ${!className?.includes('not-sticky') ? 'sticky top-4' : ''} ${className}`}>
+    <nav className={`bg-white rounded-lg border border-gray-200 p-6 shadow-sm ${className}`}>
       <h2 className={`${bgColor} px-4 py-2 text-lg font-semibold border-b border-gray-200 -mx-6 -mt-6 mb-4`}>
         Table of Contents
       </h2>
@@ -77,17 +88,17 @@ export function TableOfContents({ items, activeColor = 'indigo', hasFaq, classNa
             key={index}
             className={`
               ${heading.level === 2 ? '' : 'ml-4'}
-              ${activeId === heading.id ? 'text-primary-600 font-medium' : 'text-gray-600'}
+              ${activeId === heading.id ? textColor : 'text-slate-600'}
             `}
           >
             <a
               href={`#${heading.id}`}
               onClick={(e) => scrollToHeading(e, heading.id)}
-              className={`block hover:text-primary-700 transition-colors duration-150 ${
-                activeId === heading.id
-                  ? colorClasses[activeColor]
-                  : 'text-slate-600 hover:text-slate-900'
-              } ${activeId === heading.id ? 'font-medium' : ''}`}
+              className={`
+                block text-sm py-1
+                hover:text-${activeColor}-600 transition-colors duration-200
+                ${activeId === heading.id ? 'font-medium' : ''}
+              `}
             >
               {heading.text}
             </a>

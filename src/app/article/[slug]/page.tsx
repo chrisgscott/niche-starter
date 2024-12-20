@@ -21,6 +21,12 @@ interface ArticleProps {
   params: { slug: string };
 }
 
+interface TOCItem {
+  id: string;
+  text: string;
+  level: number;
+}
+
 function getReadingTime(content: string): string {
   const wordsPerMinute = 200;
   const wordCount = content.trim().split(/\s+/).length;
@@ -80,8 +86,22 @@ export default async function Article({ params }: ArticleProps) {
     p: ({ children }) => {
       return <p className="mb-4 leading-relaxed">{linker.processText(String(children))}</p>;
     },
-    h2: ({ children }) => <h2 className="text-2xl font-bold mt-8 mb-4">{children}</h2>,
-    h3: ({ children }) => <h3 className="text-xl font-bold mt-6 mb-3">{children}</h3>,
+    h2: ({ children }) => {
+      const id = String(children).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      return (
+        <h2 id={id} className="text-2xl font-bold mt-8 mb-4 scroll-mt-24">
+          {children}
+        </h2>
+      );
+    },
+    h3: ({ children }) => {
+      const id = String(children).toLowerCase().replace(/[^a-z0-9]+/g, '-');
+      return (
+        <h3 id={id} className="text-xl font-bold mt-6 mb-3 scroll-mt-24">
+          {children}
+        </h3>
+      );
+    },
     ul: ({ children }) => <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>,
     a: ({ href, children }) => (
@@ -101,6 +121,44 @@ export default async function Article({ params }: ArticleProps) {
       </div>
     ),
   };
+
+  // Extract headings from content for TOC
+  const headings = [];
+  const lines = content.split('\n');
+  
+  for (const line of lines) {
+    // Match h2 headings (##)
+    const h2Match = line.match(/^##\s+([^#].*?)(?:\s*#*\s*)?$/);
+    if (h2Match) {
+      headings.push({
+        id: h2Match[1].toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        text: h2Match[1].trim(),
+        level: 2
+      });
+      continue;
+    }
+    
+    // Match h3 headings (###)
+    const h3Match = line.match(/^###\s+([^#].*?)(?:\s*#*\s*)?$/);
+    if (h3Match) {
+      headings.push({
+        id: h3Match[1].toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        text: h3Match[1].trim(),
+        level: 3
+      });
+    }
+  }
+
+  const tocItems = headings;
+
+  // Add FAQ section to TOC if it exists
+  if (data.faq && data.faq.length > 0) {
+    tocItems.push({
+      id: 'frequently-asked-questions',
+      text: 'Frequently Asked Questions',
+      level: 2,
+    });
+  }
 
   return (
     <Layout data={data} topics={topics}>
@@ -196,13 +254,10 @@ export default async function Article({ params }: ArticleProps) {
           <div>
             <div className="sticky top-24 space-y-8">
               {/* Table of Contents */}
-              <div className="bg-white rounded-lg border border-slate-200 p-6">
-                <TableOfContents 
-                  content={content} 
-                  activeColor={data.theme?.color || 'indigo'} 
-                  hasFaq={!!data.faq && data.faq.length > 0}
-                />
-              </div>
+              <TableOfContents 
+                items={tocItems}
+                activeColor={data.theme?.color || 'indigo'}
+              />
             </div>
           </div>
         </div>

@@ -16,11 +16,11 @@ import { ContentCard } from '@/components/ContentCard';
 import { Schema, ThemeColor } from '@/types/schema';
 import { Calendar, Clock, Tag } from 'lucide-react';
 import { findRelatedPosts } from '@/utils/posts';
-import { getContentMetadata, getTopicData, getAllTopics } from '@/utils/content';
+import { getContentMetadata, getTopicData, getAllTopics, getSiteWideCTA } from '@/utils/content';
 import { Breadcrumb } from '@/components/Breadcrumb';
 import { PostSidebar } from '@/components/PostSidebar';
 import { Markdown } from '@/lib/markdown';
-import { CallToAction } from '@/components/CallToAction';
+import { InlineCallToAction } from '@/components/cta';
 
 interface PostProps {
   params: { slug: string };
@@ -211,18 +211,33 @@ export default async function Post({ params }: PostProps) {
   };
 
   // Extract headings from content for TOC
-  const headingRegex = /^(#{1,6})\s+(.+)$/gm;
-  const matches = Array.from(content.matchAll(headingRegex));
+  const headings = [];
+  const lines = content.split('\n');
   
-  const tocItems = matches.map((match) => {
-    const level = match[1].length;
-    const text = match[2];
-    return {
-      level,
-      text,
-      id: text.toLowerCase().replace(/[^a-z0-9]+/g, '-')
-    };
-  });
+  for (const line of lines) {
+    // Match h2 headings (##)
+    const h2Match = line.match(/^##\s+([^#].*?)(?:\s*#*\s*)?$/);
+    if (h2Match) {
+      headings.push({
+        id: h2Match[1].toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        text: h2Match[1].trim(),
+        level: 2
+      });
+      continue;
+    }
+    
+    // Match h3 headings (###)
+    const h3Match = line.match(/^###\s+([^#].*?)(?:\s*#*\s*)?$/);
+    if (h3Match) {
+      headings.push({
+        id: h3Match[1].toLowerCase().replace(/[^a-z0-9]+/g, '-'),
+        text: h3Match[1].trim(),
+        level: 3
+      });
+    }
+  }
+
+  const tocItems = headings;
 
   // Add FAQ section to TOC if it exists
   if (data.faq && data.faq.length > 0) {
@@ -232,6 +247,9 @@ export default async function Post({ params }: PostProps) {
       level: 2,
     });
   }
+
+  // Get site-wide CTA
+  const cta = await getSiteWideCTA();
 
   return (
     <Layout data={data} topics={topics}>
@@ -296,7 +314,7 @@ export default async function Post({ params }: PostProps) {
       </div>
 
       {/* Content */}
-      <div className="max-w-7xl mx-auto px-4 py-8 pb-32">
+      <div className="max-w-7xl mx-auto px-4 py-12">
         {/* Breadcrumb */}
         <div className="mb-8">
           <Breadcrumb topic={parentTopic} currentTitle={data.title} />
@@ -318,14 +336,9 @@ export default async function Post({ params }: PostProps) {
             </div>
 
             {/* Inline CTA */}
-            <CallToAction 
-              variant="inline"
-              config={{
-                title: "Free Photography Business Checklist",
-                description: "Download our comprehensive guide to launching and scaling your photography business",
-                buttonText: "Get the Checklist",
-                icon: "download"
-              }}
+            <InlineCallToAction 
+              config={cta}
+              className="my-8"
             />
 
             {/* FAQ Section */}
@@ -376,11 +389,7 @@ export default async function Post({ params }: PostProps) {
               <PostSidebar 
                 toc={tocItems} 
                 activeColor={data.theme?.color || 'indigo'}
-                cta={{
-                  title: "Free Photography Business Checklist",
-                  description: "Download our comprehensive guide to launching and scaling your photography business",
-                  buttonText: "Get the Checklist"
-                }}
+                cta={cta}
               />
             </div>
           </aside>

@@ -6,7 +6,7 @@ import { Layout } from '@/components/Layout';
 import { Schema, ThemeColor } from '@/types/schema';
 import { TopicCard } from '@/components/TopicCard';
 import { getPostsByTopic } from '@/utils/posts';
-import { CallToAction } from '@/components/CallToAction';
+import { HeroCallToAction } from '@/components/cta';
 import { getSiteWideCTA } from '@/utils/content';
 
 interface Topic {
@@ -70,7 +70,8 @@ export default async function Home() {
       })
   );
 
-  const businessChecklistCTA = getSiteWideCTA('content_upgrades', 'business_checklist');
+  // Get site-wide CTA
+  const cta = await getSiteWideCTA();
 
   return (
     <Layout 
@@ -81,7 +82,7 @@ export default async function Home() {
       }))}
     >
       {/* Hero Section */}
-      <div className="w-full bg-slate-50 border-b">
+      <div className="w-full bg-gradient-to-b from-blue-50 to-white border-b">
         <div className="max-w-7xl mx-auto px-4 py-24">
           <div className="max-w-3xl">
             <h1 className="text-5xl font-bold mb-6 text-slate-900">
@@ -108,16 +109,15 @@ export default async function Home() {
         </div>
       </div>
 
-      {/* Business Checklist CTA */}
-      {businessChecklistCTA && (
+      {/* Global CTA Section */}
+      <div className="w-full">
         <div className="max-w-7xl mx-auto px-4 py-12">
-          <CallToAction 
-            config={businessChecklistCTA} 
-            variant="primary" 
+          <HeroCallToAction 
+            config={cta}
             className="w-full"
           />
         </div>
-      )}
+      </div>
 
       {/* Topics Section */}
       <div className="max-w-7xl mx-auto px-4 py-24">
