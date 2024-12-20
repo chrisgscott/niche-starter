@@ -15,6 +15,8 @@ image?:                # Optional but recommended for all content types
   alt: string         # Descriptive alt text
   credit: string      # Photographer or image credit
 topic?: string        # Topic slug (required for posts and articles)
+theme?:               # Visual styling configuration
+  color: string       # Base color (blue, green, purple, orange, indigo)
 ```
 
 ## Homepage
@@ -108,11 +110,11 @@ schema:               # SEO schema configuration
 Used for specific, detailed content pieces. These are the leaf nodes of your content tree.
 
 ```yaml
-title: "Best Office Snacks for Productivity"
-description: "Guide to healthy office snacks"
-slug: "best-office-snacks"
-keywords: ["office snacks", "workplace wellness"]
-parent_topic: string         # Main topic URL (e.g., "/topic/hr-library")
+title: string          # Article title
+description: string    # Article description
+slug: string          # URL-friendly identifier
+parent_topic?: string # Optional topic slug this article belongs to
+keywords: string[]    # SEO keywords
 parent_post: string         # Sub-topic URL (e.g., "/post/workplace-wellness")
 breadcrumb:                 # Navigation path
   - title: "HR Library"
@@ -133,6 +135,50 @@ schema:
       name: string
       description: string
 ```
+
+## Article Pages (Programmatic SEO)
+Used for programmatically generated content pages that follow a template structure.
+
+```yaml
+title: string          # Article title
+description: string    # Article description
+slug: string          # URL-friendly identifier
+parent_topic?: string # Optional topic slug this article belongs to
+keywords: string[]    # SEO keywords
+template:             # Template information for pSEO
+  pattern: string     # The template pattern used (e.g., "Best {contentType} for {photographyType} Photographers")
+  variables:          # Variables used to generate this article
+    contentType: string    # E.g., "Books", "Software", "Online Courses"
+    photographyType: string # E.g., "Portrait", "Wedding", "Newborn"
+image:
+  url: string         # Unsplash image URL
+  alt: string         # Descriptive alt text
+  credit: string      # Photographer credit
+theme:
+  color: string       # Base color (blue, green, purple, orange, indigo)
+faq?:                 # Optional FAQ section for SEO
+  - question: string
+    answer: string
+schema:               # SEO schema configuration
+  type: "List"       # Usually "List" for pSEO articles
+  items:             # List items for schema
+    - name: string
+      description: string
+```
+
+### Common Template Patterns
+Our articles typically follow these patterns:
+1. `"Best {contentType} for {photographyType} Photographers"`
+   - Used for resource recommendations
+   - Examples: "Best Books for Newborn Photographers", "Best Software for Wedding Photographers"
+
+2. `"Essential {contentType} for {photographyType} Photography"`
+   - Used for gear and equipment guides
+   - Example: "Essential Equipment for Portrait Photography"
+
+3. `"Top {contentType} for {photographyType} Photographers"`
+   - Used for curated lists
+   - Example: "Top Podcasts for Wedding Photographers"
 
 ## Schema.org Implementation
 

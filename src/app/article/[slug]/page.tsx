@@ -2,56 +2,44 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import ReactMarkdown, { Components } from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import rehypeRaw from 'rehype-raw';
 import { Metadata } from 'next';
 import { InternalLinker } from '@/utils/internal-linking';
-import { getContentMetadata } from '@/utils/content';
+import { getContentMetadata, getAllTopics, getTopicData } from '@/utils/content';
+import { getThemeColors } from '@/utils/theme';
 import Image from 'next/image';
 import Link from 'next/link';
-
-interface SchemaListItem {
-  '@type': 'ListItem';
-  position: number;
-  name: string;
-  description: string;
-}
-
-interface SchemaList {
-  type: 'List';
-  items: SchemaListItem[];
-}
-
-interface ArticleFrontmatter {
-  title: string;
-  description: string;
-  slug: string;
-  keywords: string[];
-  image?: {
-    url: string;
-    alt: string;
-    credit: string;
-  };
-  links: {
-    topic: string;
-  };
-  faq?: Array<{
-    question: string;
-    answer: string;
-  }>;
-  schema: SchemaList;
-}
+import { Layout } from '@/components/Layout';
+import { TableOfContents } from '@/components/TableOfContents';
+import { FAQ } from '@/components/FAQ';
+import { Breadcrumb } from '@/components/Breadcrumb';
+import { Schema, ThemeColor } from '@/types/schema';
+import { Calendar, Clock } from 'lucide-react';
 
 interface ArticleProps {
   params: { slug: string };
 }
 
-async function getArticleData(slug: string): Promise<{ data: ArticleFrontmatter; content: string }> {
+function getReadingTime(content: string): string {
+  const wordsPerMinute = 200;
+  const wordCount = content.trim().split(/\s+/).length;
+  const minutes = Math.ceil(wordCount / wordsPerMinute);
+  return `${minutes} min read`;
+}
+
+function titleToSlug(title: string): string {
+  return title.toLowerCase().replace(/[^a-z0-9]+/g, '-').replace(/(^-|-$)/g, '');
+}
+
+async function getArticleData(slug: string): Promise<{ data: Schema; content: string }> {
   const markdownWithMeta = fs.readFileSync(
     path.join(process.cwd(), 'src/content/articles', `${slug}.md`),
     'utf-8'
   );
   const result = matter(markdownWithMeta);
   return {
-    data: result.data as ArticleFrontmatter,
+    data: result.data as Schema,
     content: result.content
   };
 }
@@ -79,11 +67,15 @@ export async function generateStaticParams() {
 export default async function Article({ params }: ArticleProps) {
   const { data, content } = await getArticleData(params.slug);
   const linker = new InternalLinker(`/article/${params.slug}`);
+  const readingTime = getReadingTime(content);
+  const colors = getThemeColors(data.theme?.color || 'indigo');
 
-  // Fetch metadata for parent topic
-  const topicMetadata = data.links.topic ? getContentMetadata(data.links.topic) : null;
+  // Get all topics for the footer
+  const topics = getAllTopics();
 
-  // Custom components for ReactMarkdown
+  // Get parent topic data if it exists
+  const parentTopic = data.parent_topic ? getTopicData(data.parent_topic) : undefined;
+
   const components: Components = {
     p: ({ children }) => {
       return <p className="mb-4 leading-relaxed">{linker.processText(String(children))}</p>;
@@ -93,111 +85,128 @@ export default async function Article({ params }: ArticleProps) {
     ul: ({ children }) => <ul className="list-disc list-inside mb-4 space-y-2">{children}</ul>,
     ol: ({ children }) => <ol className="list-decimal list-inside mb-4 space-y-2">{children}</ol>,
     a: ({ href, children }) => (
-      <Link href={href || '#'} className="link link-primary">
+      <Link href={href || '#'} className={`${colors.text} hover:${colors.textDark}`}>
         {children}
       </Link>
     ),
-    code: ({ children }) => (
-      <code className="bg-base-200 px-1.5 py-0.5 rounded text-sm font-mono">
-        {children}
-      </code>
-    ),
-    blockquote: ({ children }) => (
-      <blockquote className="border-l-4 border-primary pl-4 italic my-4">
-        {children}
-      </blockquote>
+    img: ({ src, alt }) => (
+      <div className="my-8">
+        <Image
+          src={src || ''}
+          alt={alt || ''}
+          width={800}
+          height={400}
+          className="rounded-lg"
+        />
+      </div>
     ),
   };
 
   return (
-    <div className="min-h-screen bg-base-200">
-      <article className="max-w-4xl mx-auto py-8 px-4">
-        <div className="card bg-base-100 shadow-xl">
-          <header className="card-body">
-            <h1 className="card-title text-4xl mb-4">{data.title}</h1>
+    <Layout data={data} topics={topics}>
+      {/* Hero Section */}
+      <div className={`${colors.light} bg-gradient-to-b to-white border-b`}>
+        <div className="max-w-7xl mx-auto px-4 py-16">
+          <div className="grid md:grid-cols-2 gap-8 items-center">
+            <div className="space-y-4">
+              <div>
+                <h1 className="text-4xl font-bold text-slate-900 mb-3">{data.title}</h1>
+                <p className="text-xl text-slate-600">{data.description}</p>
+              </div>
+              {data.keywords && data.keywords.length > 0 && (
+                <div className="flex flex-wrap gap-2">
+                  {data.keywords.map((keyword, index) => (
+                    <span 
+                      key={index} 
+                      className="bg-black/5 text-slate-500 text-xs px-2.5 py-0.5 rounded-full border border-slate-200/50"
+                    >
+                      {keyword}
+                    </span>
+                  ))}
+                </div>
+              )}
+              <div className="flex flex-wrap gap-4 text-sm text-slate-600">
+                {data.datePublished && (
+                  <div className="flex items-center gap-1.5">
+                    <Calendar className="w-4 h-4" />
+                    <time dateTime={data.datePublished}>
+                      {new Date(data.datePublished).toLocaleDateString('en-US', {
+                        year: 'numeric',
+                        month: 'long',
+                        day: 'numeric'
+                      })}
+                    </time>
+                  </div>
+                )}
+                <div className="flex items-center gap-1.5">
+                  <Clock className="w-4 h-4" />
+                  <span>{readingTime}</span>
+                </div>
+              </div>
+            </div>
             {data.image && (
-              <figure className="relative aspect-[16/9] -mx-8">
+              <div className="relative aspect-[4/3] rounded-lg overflow-hidden shadow-lg">
                 <Image
                   src={data.image.url}
-                  alt={data.image.alt}
+                  alt={data.image.alt || data.title}
                   fill
                   className="object-cover"
-                  sizes="(max-width: 768px) 100vw, 800px"
+                  priority
                 />
-                <div className="absolute bottom-2 right-2 badge badge-ghost">
-                  Photo by {data.image.credit}
-                </div>
-              </figure>
-            )}
-            <div className="flex flex-wrap gap-4 my-4">
-              {data.keywords.map((keyword: string) => (
-                <span key={keyword} className="badge badge-accent">
-                  {keyword}
-                </span>
-              ))}
-            </div>
-            <p className="text-xl opacity-75">{data.description}</p>
-          </header>
-
-          <div className="card-body prose prose-lg max-w-none">
-            {/* Schema List */}
-            {data.schema.items && data.schema.items.length > 0 && (
-              <div className="not-prose mb-8">
-                <ul className="menu bg-base-200 rounded-box">
-                  {data.schema.items.map((item, index) => (
-                    <li key={index}>
-                      <div className="flex items-center gap-4">
-                        <span className="badge badge-primary">{index + 1}</span>
-                        <div>
-                          <h3 className="font-medium">{item.name}</h3>
-                          <p className="text-sm opacity-75">{item.description}</p>
-                        </div>
-                      </div>
-                    </li>
-                  ))}
-                </ul>
+                {data.image.credit && (
+                  <div className="absolute bottom-2 right-2 text-xs text-white bg-black/50 px-2 py-1 rounded">
+                    Photo by {data.image.credit}
+                  </div>
+                )}
               </div>
             )}
+          </div>
+        </div>
+      </div>
 
-            <ReactMarkdown components={components}>{content}</ReactMarkdown>
+      {/* Content */}
+      <div className="max-w-7xl mx-auto px-4 py-8 pb-32">
+        {/* Breadcrumb */}
+        {parentTopic && (
+          <div className="mb-8">
+            <Breadcrumb topic={parentTopic} currentTitle={data.title} />
+          </div>
+        )}
+
+        {/* Main Content */}
+        <div className="grid grid-cols-1 md:grid-cols-[2fr,1fr] gap-8">
+          {/* Left Column */}
+          <div className="space-y-8">
+            {/* Main Content */}
+            <div className="prose prose-slate prose-headings:scroll-mt-24 max-w-none">
+              <ReactMarkdown 
+                remarkPlugins={[remarkGfm]}
+                rehypePlugins={[rehypeRaw]}
+                components={components}
+              >
+                {content}
+              </ReactMarkdown>
+            </div>
+
+            {/* FAQ Section */}
+            {data.faq && <FAQ items={data.faq} themeColor={data.theme?.color || 'indigo'} />}
           </div>
 
-          {/* FAQ Section */}
-          {data.faq && data.faq.length > 0 && (
-            <section className="card-body border-t border-base-300">
-              <h2 className="card-title text-2xl mb-6">Frequently Asked Questions</h2>
-              <div className="join join-vertical w-full">
-                {data.faq.map((item, index) => (
-                  <div key={index} className="collapse collapse-arrow join-item border border-base-300">
-                    <input type="radio" name="faq-accordion" /> 
-                    <div className="collapse-title text-xl font-medium">
-                      {item.question}
-                    </div>
-                    <div className="collapse-content">
-                      <p>{item.answer}</p>
-                    </div>
-                  </div>
-                ))}
+          {/* Right Column */}
+          <div>
+            <div className="sticky top-24 space-y-8">
+              {/* Table of Contents */}
+              <div className="bg-white rounded-lg border border-slate-200 p-6">
+                <TableOfContents 
+                  content={content} 
+                  activeColor={data.theme?.color || 'indigo'} 
+                  hasFaq={!!data.faq && data.faq.length > 0}
+                />
               </div>
-            </section>
-          )}
-
-          {/* Back to Topic Link */}
-          {topicMetadata && (
-            <div className="card-body border-t border-base-300">
-              <Link 
-                href={data.links.topic} 
-                className="btn btn-primary flex items-center gap-2"
-              >
-                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 20 20" fill="currentColor">
-                  <path fillRule="evenodd" d="M9.707 16.707a1 1 0 01-1.414 0l-6-6a1 1 0 010-1.414l6-6a1 1 0 011.414 1.414L4.414 9H17a1 1 0 110 2H4.414l5.293 5.293a1 1 0 010 1.414z" clipRule="evenodd" />
-                </svg>
-                Back to {topicMetadata.title}
-              </Link>
             </div>
-          )}
+          </div>
         </div>
-      </article>
-    </div>
+      </div>
+    </Layout>
   );
 }
