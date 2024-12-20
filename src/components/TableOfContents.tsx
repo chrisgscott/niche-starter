@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useState } from 'react';
+import { useState, useEffect } from 'react';
 
 interface TOCItem {
   id: string;
@@ -11,22 +11,16 @@ interface TOCItem {
 interface TableOfContentsProps {
   items: TOCItem[];
   activeColor?: string;
-  hasFaq?: boolean;
   className?: string;
 }
 
 export function TableOfContents({ 
   items = [], 
   activeColor = 'indigo', 
-  hasFaq = false,
   className = '' 
 }: TableOfContentsProps) {
   const [activeId, setActiveId] = useState<string>('');
-
-  // If no items, don't render anything but still maintain hook order
-  if (!items?.length) {
-    return null;
-  }
+  const [activeH2Id, setActiveH2Id] = useState<string>('');
 
   useEffect(() => {
     const observer = new IntersectionObserver(
@@ -34,6 +28,20 @@ export function TableOfContents({
         entries.forEach((entry) => {
           if (entry.isIntersecting) {
             setActiveId(entry.target.id);
+            // If this is an h3, find its parent h2 and set it as active
+            const h3Element = entry.target;
+            if (h3Element.tagName.toLowerCase() === 'h3') {
+              let currentElement = h3Element.previousElementSibling;
+              while (currentElement) {
+                if (currentElement.tagName.toLowerCase() === 'h2') {
+                  setActiveH2Id(currentElement.id);
+                  break;
+                }
+                currentElement = currentElement.previousElementSibling;
+              }
+            } else if (h3Element.tagName.toLowerCase() === 'h2') {
+              setActiveH2Id(h3Element.id);
+            }
           }
         });
       },
@@ -68,55 +76,102 @@ export function TableOfContents({
   const bgColorClass = bgColorClasses[activeColor as keyof typeof bgColorClasses] || bgColorClasses.indigo;
   const textColorClass = textColorClasses[activeColor as keyof typeof textColorClasses] || textColorClasses.indigo;
 
+  // Group items by their parent h2
+  const groupedItems = items.reduce((acc, item) => {
+    if (item.level === 2) {
+      acc.push({ h2: item, h3s: [] });
+    } else if (item.level === 3 && acc.length > 0) {
+      acc[acc.length - 1].h3s.push(item);
+    }
+    return acc;
+  }, [] as { h2: TOCItem, h3s: TOCItem[] }[]);
+
   return (
-    <div className={`bg-white rounded-lg border border-slate-200 ${className}`}>
+    <div className={`bg-white rounded-lg border border-slate-200 transition-all duration-300 ease-in-out ${className}`}>
       <h3 className={`text-lg font-bold text-slate-900 p-4 mb-0 ${bgColorClass} border-b border-slate-200`}>
         Table of Contents
       </h3>
-      <nav className="p-4 space-y-2">
-        {items.map((item, index) => {
-          const isActive = activeId === item.id;
-          const activeStyles = isActive ? `font-semibold ${textColorClass}` : 'text-slate-600 hover:text-slate-800';
-          return (
-            <a
-              key={index}
-              href={`#${item.id}`}
-              onClick={(e) => {
-                e.preventDefault();
-                const element = document.getElementById(item.id);
-                if (element) {
-                  element.scrollIntoView({
-                    behavior: 'smooth',
-                    block: 'start'
-                  });
-                  window.history.pushState({}, '', `#${item.id}`);
-                  setActiveId(item.id); // Set active immediately on click
-                }
-              }}
-              className={`
-                block text-sm
-                ${item.level === 2 ? '' : 'ml-4'}
-                ${activeStyles}
-                hover:underline underline-offset-2
-                transition-colors duration-150
-              `}
-            >
-              {item.text}
-            </a>
-          );
-        })}
-        {hasFaq && (
-          <a
-            href="#common-questions"
-            className={`
-              block text-sm text-slate-900
-              hover:text-slate-600
-              hover:underline underline-offset-2
-            `}
-          >
-            Common Questions
-          </a>
-        )}
+      <nav className="p-4">
+        <div className="space-y-3">
+          {groupedItems.map(({ h2, h3s }, index) => {
+            const isH2Active = activeH2Id === h2.id;
+            const h2ActiveStyles = activeId === h2.id ? `font-semibold ${textColorClass}` : 'text-slate-600 hover:text-slate-800';
+            
+            return (
+              <div key={index}>
+                <a
+                  href={`#${h2.id}`}
+                  onClick={(e) => {
+                    e.preventDefault();
+                    const element = document.getElementById(h2.id);
+                    if (element) {
+                      element.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                      });
+                      window.history.pushState({}, '', `#${h2.id}`);
+                      setActiveId(h2.id);
+                      setActiveH2Id(h2.id);
+                    }
+                  }}
+                  className={`
+                    block text-sm
+                    ${h2ActiveStyles}
+                    hover:underline underline-offset-2
+                    transition-colors duration-150
+                  `}
+                >
+                  {h2.text}
+                </a>
+                
+                {/* Only add expansion container if there are h3s */}
+                {h3s.length > 0 && (
+                  <div 
+                    className={`
+                      ml-4 transition-all duration-300 ease-in-out
+                      ${isH2Active ? 'opacity-100 h-auto mt-3' : 'opacity-0 h-0 mt-0'}
+                      overflow-hidden
+                    `}
+                  >
+                    <div className="space-y-3">
+                      {h3s.map((h3, h3Index) => {
+                        const isActive = activeId === h3.id;
+                        const activeStyles = isActive ? `font-semibold ${textColorClass}` : 'text-slate-600 hover:text-slate-800';
+                        
+                        return (
+                          <a
+                            key={h3Index}
+                            href={`#${h3.id}`}
+                            onClick={(e) => {
+                              e.preventDefault();
+                              const element = document.getElementById(h3.id);
+                              if (element) {
+                                element.scrollIntoView({
+                                  behavior: 'smooth',
+                                  block: 'start'
+                                });
+                                window.history.pushState({}, '', `#${h3.id}`);
+                                setActiveId(h3.id);
+                              }
+                            }}
+                            className={`
+                              block text-sm
+                              ${activeStyles}
+                              hover:underline underline-offset-2
+                              transition-colors duration-150
+                            `}
+                          >
+                            {h3.text}
+                          </a>
+                        );
+                      })}
+                    </div>
+                  </div>
+                )}
+              </div>
+            );
+          })}
+        </div>
       </nav>
     </div>
   );

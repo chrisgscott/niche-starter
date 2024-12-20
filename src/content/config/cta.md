@@ -6,6 +6,8 @@ type: "email"  # Options: "email" | "link"
 title: "Free Photography Business Checklist"
 description: "Download our comprehensive guide to launching and scaling your photography business"
 buttonText: "Get the Checklist"
+icon: "download"  # Options: "download" | "mail" | "external" | "gift" | "none"
+trackingId: "cta_checklist_01"
 
 # Email Configuration (only used if type is "email")
 email:

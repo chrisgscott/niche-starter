@@ -2,7 +2,7 @@ import React from 'react';
 import { TableOfContents } from './TableOfContents';
 import { StickyCallToAction } from './cta/StickyCallToAction';
 import type { TOCItem } from '@/types';
-import type { CTAConfig } from '@/types/cta';
+import type { CTAConfig } from './cta/types';
 
 interface ContentSidebarProps {
   toc: TOCItem[];
