@@ -35,10 +35,42 @@
   - [ ] JSON-LD schema validation
 
 ### Content Generation (Priority)
-- [ ] CrewAI Integration Setup
-  - [ ] Agent roles and responsibilities
-  - [ ] Workflow configuration
-  - [ ] Content quality parameters
+- [ ] CrewAI PSEO Integration
+  - [ ] Research Agent
+    - [ ] Niche analysis capabilities
+    - [ ] Long-tail keyword research
+    - [ ] Template pattern identification
+    - [ ] Variable set definition
+  - [ ] Title Builder Agent
+    - [ ] Template-based title generation
+    - [ ] Variable combination handling
+    - [ ] Title validation and filtering
+  - [ ] Content Writer Agent
+    - [ ] Article format selection (listicle, comparison, standard)
+    - [ ] SEO-optimized content generation
+    - [ ] Dynamic structure based on content type
+  - [ ] Frontmatter Expert Agent
+    - [ ] Schema-compliant frontmatter generation
+    - [ ] Keyword optimization
+    - [ ] Structured data (Schema.org) integration
+  - [ ] Markdown Standardization Agent
+    - [ ] Consistent heading hierarchy
+    - [ ] Standard markdown patterns
+    - [ ] Content structure validation
+  - [ ] File Management Agent
+    - [ ] Proper file naming
+    - [ ] Directory organization
+    - [ ] File metadata handling
+- [ ] Workflow Orchestration
+  - [ ] Agent communication protocol
+  - [ ] Data passing between agents
+  - [ ] Error handling and recovery
+  - [ ] Quality assurance checks
+- [ ] Content Quality Control
+  - [ ] SEO score validation
+  - [ ] Content uniqueness verification
+  - [ ] Readability analysis
+  - [ ] Technical accuracy checking
 - [ ] Topic Generation
   - [ ] Research workflow
   - [ ] Topic structure generation
