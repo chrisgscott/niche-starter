@@ -26,6 +26,18 @@ export interface SchemaAuthor {
   url?: string;
 }
 
+export interface RelatedContent {
+  title: string;
+  description: string;
+  slug: string;
+  image?: {
+    url: string;
+    alt?: string;
+  };
+  type: 'post' | 'topic' | 'article';
+  path: string;
+}
+
 export interface Schema {
   title: string;
   description: string;

@@ -8,7 +8,6 @@ export const imageSchema = z.object({
 });
 
 export const themeSchema = z.object({
-  color: z.enum(['blue', 'green', 'purple', 'orange', 'indigo', 'amber']),
   icon: z.string().optional()
 });
 
@@ -24,7 +23,7 @@ export const faqSchema = z.array(z.object({
 
 // Base schema for all content types
 export const baseSchema = z.object({
-  contentType: z.enum(['article', 'post', 'topic', 'config', 'page']).optional(),
+  contentType: z.enum(['articles', 'posts', 'topics', 'configs', 'pages']).optional(),
   title: z.string(),
   description: z.string(),
   slug: z.string(),
@@ -154,9 +153,9 @@ const footerSchema = z.object({
     description: z.string()
   }),
   social: z.object({
-    twitter: z.string().url(),
-    facebook: z.string().url(),
-    instagram: z.string().url()
+    twitter: z.string().url().optional(),
+    facebook: z.string().url().optional(),
+    instagram: z.string().url().optional()
   }),
   resources: z.object({
     title: z.string(),
@@ -178,9 +177,58 @@ const footerSchema = z.object({
 export const siteConfigSchema = z.object({
   title: z.string(),
   description: z.string(),
-  navigation: navigationSchema,
-  footer: footerSchema,
-  copyright: z.string()
+  theme: z.object({
+    colors: z.object({
+      primary: z.object({
+        light: z.string(),
+        dark: z.string(),
+        text: z.string(),
+        border: z.string()
+      }),
+      secondary: z.object({
+        light: z.string(),
+        dark: z.string(),
+        text: z.string(),
+        border: z.string()
+      }),
+      accent: z.object({
+        light: z.string(),
+        dark: z.string(),
+        text: z.string(),
+        border: z.string()
+      })
+    })
+  }),
+  navigation: z.array(z.object({
+    label: z.string(),
+    link: z.string()
+  })),
+  footer: z.object({
+    company: z.object({
+      name: z.string(),
+      description: z.string()
+    }),
+    social: z.object({
+      twitter: z.string().url().optional(),
+      facebook: z.string().url().optional(),
+      instagram: z.string().url().optional()
+    }),
+    resources: z.object({
+      title: z.string(),
+      links: z.array(z.object({
+        label: z.string(),
+        link: z.string()
+      }))
+    }),
+    legal: z.object({
+      title: z.string(),
+      links: z.array(z.object({
+        label: z.string(),
+        link: z.string()
+      }))
+    })
+  }),
+  copyright: z.string().optional()
 });
 
 // Config schema (for other config types)

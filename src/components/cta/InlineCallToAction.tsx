@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Download, Mail, ExternalLink, Gift, BookOpen } from 'lucide-react';
 import { CTAConfig } from './types';
 import { EmailCollectionForm } from './EmailCollectionForm';
+import { useTheme } from '@/hooks/useTheme';
 
 const icons = {
   'download': Download,
@@ -24,6 +25,8 @@ export const InlineCallToAction: React.FC<InlineCallToActionProps> = ({
   config,
   className = ''
 }) => {
+  const { getColor } = useTheme();
+
   // Direct link CTA
   if (config.type === 'link' && config.href) {
     return (
@@ -37,11 +40,11 @@ export const InlineCallToAction: React.FC<InlineCallToActionProps> = ({
             <div>
               <Link 
                 href={config.href}
-                className="
+                className={`
                   px-4 py-2 rounded-md transition-all duration-300 
                   inline-flex items-center justify-center gap-2
-                  bg-emerald-600 text-white hover:bg-emerald-700
-                "
+                  ${getColor('accent', 'dark')} text-white hover:opacity-90
+                `}
               >
                 {(() => {
                   const Icon = icons[config.icon ?? 'arrow'];

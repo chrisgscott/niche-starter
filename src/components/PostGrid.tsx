@@ -2,15 +2,15 @@
 
 import { useEffect, useState } from 'react';
 import { ContentCard } from './ContentCard';
-import { Post } from '@/utils/posts';
+import { ContentMetadata } from '@/utils/content';
 
 interface PostGridProps {
-  posts: Post[];
+  posts: ContentMetadata[];
   postsPerPage?: number;
 }
 
 export function PostGrid({ posts, postsPerPage = 12 }: PostGridProps) {
-  const [visiblePosts, setVisiblePosts] = useState<Post[]>(posts.slice(0, postsPerPage));
+  const [visiblePosts, setVisiblePosts] = useState<ContentMetadata[]>(posts.slice(0, postsPerPage));
   const [hasMore, setHasMore] = useState(posts.length > postsPerPage);
 
   const loadMore = () => {
@@ -25,11 +25,12 @@ export function PostGrid({ posts, postsPerPage = 12 }: PostGridProps) {
       <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-8">
         {visiblePosts.map((post, index) => (
           <ContentCard
-            key={`${post.slug}-${index}`}
-            title={post.title}
-            description={post.description}
-            image={post.image}
-            href={`/post/${post.slug}`}
+            key={`${post.data.slug}-${index}`}
+            title={post.data.title}
+            description={post.data.description}
+            image={post.data.image}
+            slug={post.data.slug}
+            type="post"
           />
         ))}
       </div>

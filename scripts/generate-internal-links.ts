@@ -36,12 +36,10 @@ function getContentFiles(contentDir: string): ContentFile[] {
   console.log('Content directory:', contentDir);
   
   const files: ContentFile[] = [];
-  const types = ['topic', 'post', 'article'] as const;
+  const types = ['topics', 'posts', 'articles'] as const;
 
   for (const type of types) {
-    // Use the correct plural form for each type
-    const plural = type === 'article' ? 'articles' : `${type}s`;
-    const dir = join(contentDir, plural);
+    const dir = join(contentDir, type);
     console.log(`\nChecking directory: ${dir}`);
     
     if (!existsSync(dir)) {
@@ -50,7 +48,7 @@ function getContentFiles(contentDir: string): ContentFile[] {
     }
 
     const mdFiles = readdirSync(dir).filter(file => file.endsWith('.md'));
-    console.log(`Found ${mdFiles.length} markdown files in ${plural}:`, mdFiles);
+    console.log(`Found ${mdFiles.length} markdown files in ${type}:`, mdFiles);
 
     const items = mdFiles.map(file => {
       const fullPath = join(dir, file);
@@ -65,9 +63,12 @@ function getContentFiles(contentDir: string): ContentFile[] {
         return null;
       }
       
+      // Convert plural directory name to singular for URL path
+      const urlType = type.slice(0, -1) as 'topic' | 'post' | 'article';
+      
       const contentFile: ContentFile = {
-        path: `/${type}/${data.slug}`,
-        type,
+        path: `/${urlType}/${data.slug}`,
+        type: urlType,
         data: {
           ...data,
           title: data.title,
@@ -77,15 +78,10 @@ function getContentFiles(contentDir: string): ContentFile[] {
         }
       };
       
-      console.log(`✅ Successfully processed ${file}`);
-      console.log('Path:', contentFile.path);
-      console.log('Keywords:', contentFile.data.keywords);
-      
+      console.log('Created content file:', contentFile);
       return contentFile;
-    })
-    .filter((item): item is ContentFile => item !== null);
+    }).filter((item): item is ContentFile => item !== null);
 
-    console.log(`\nAdded ${items.length} ${plural} to content files`);
     files.push(...items);
   }
 

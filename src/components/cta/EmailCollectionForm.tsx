@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { ArrowRight, Download, Mail, ExternalLink, Gift, BookOpen } from 'lucide-react';
 import { CTAConfig } from './types';
+import { useTheme } from '@/hooks/useTheme';
 
 interface EmailCollectionFormProps {
   config: CTAConfig;
@@ -25,6 +26,7 @@ export const EmailCollectionForm: React.FC<EmailCollectionFormProps> = ({
   const [email, setEmail] = useState('');
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitStatus, setSubmitStatus] = useState<'idle' | 'success' | 'error'>('idle');
+  const { getColor } = useTheme();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -72,13 +74,13 @@ export const EmailCollectionForm: React.FC<EmailCollectionFormProps> = ({
       <button
         type="submit"
         disabled={isSubmitting}
-        className="
+        className={`
           px-4 py-2 rounded-md transition-all duration-300 
           flex items-center justify-center gap-2
-          bg-emerald-600 text-white hover:bg-emerald-700
+          ${getColor('accent', 'dark')} text-white hover:opacity-90
           disabled:opacity-50 disabled:cursor-not-allowed
           sm:w-auto
-        "
+        `}
       >
         {isSubmitting ? (
           'Sending...'

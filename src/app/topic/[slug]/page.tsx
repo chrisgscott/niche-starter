@@ -224,6 +224,13 @@ export default async function Topic({ params }: TopicProps) {
   // Get all posts for this topic
   const posts = await getPostsByTopic(params.slug);
 
+  // Convert Schema[] to ContentMetadata[]
+  const postsMetadata = posts.map(post => ({
+    data: post,
+    content: '',
+    path: `/post/${post.slug}`
+  }));
+
   // Get related content
   const { articles } = findRelatedContent(`/topic/${params.slug}`);
 
@@ -233,7 +240,6 @@ export default async function Topic({ params }: TopicProps) {
   // Get CTA config
   const cta = await getSiteWideCTA();
 
-  // We only need posts in the grid now
   return (
     <Layout data={data} topics={topics}>
       {/* Hero Section */}
@@ -314,7 +320,7 @@ export default async function Topic({ params }: TopicProps) {
         <div className="mt-16 border-t pt-16 pb-16">
           <div className="max-w-7xl mx-auto px-4">
             <h2 className="text-3xl font-bold text-slate-900 mb-8">All {data.title} Posts</h2>
-            <PostGrid posts={posts} postsPerPage={12} />
+            <PostGrid posts={postsMetadata} postsPerPage={12} />
           </div>
         </div>
       )}

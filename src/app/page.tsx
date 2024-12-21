@@ -82,7 +82,7 @@ export default async function Home() {
       }))}
     >
       {/* Hero Section */}
-      <div className="w-full bg-gradient-to-b from-blue-50 to-white border-b">
+      <div className="w-full bg-gradient-to-b from-blue-100/50 to-white border-b border-blue-200">
         <div className="max-w-7xl mx-auto px-4 py-24">
           <div className="max-w-3xl">
             <h1 className="text-5xl font-bold mb-6 text-slate-900">
@@ -94,7 +94,7 @@ export default async function Home() {
             <div className="flex gap-4">
               <Link
                 href={home.hero.cta.link}
-                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:bg-blue-700 transition-colors"
+                className="bg-blue-600 text-white px-6 py-3 rounded-lg font-medium hover:opacity-90 transition-colors"
               >
                 {home.hero.cta.text}
               </Link>

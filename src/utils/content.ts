@@ -2,6 +2,8 @@ import fs from 'fs';
 import path from 'path';
 import matter from 'gray-matter';
 import { CTAConfig } from '@/components/cta';
+import { siteConfigSchema } from '@/utils/validation/schemas';
+import type { z } from 'zod';
 
 interface Schema {
   title: string;
@@ -21,9 +23,18 @@ interface Schema {
 }
 
 interface ContentMetadata {
-  data: Schema;
+  data: {
+    title: string;
+    description: string;
+    slug: string;
+    keywords?: string[];
+    [key: string]: any;
+  };
   content: string;
+  path: string;
 }
+
+export type SiteConfig = z.infer<typeof siteConfigSchema>;
 
 interface FooterConfig {
   about: {
@@ -54,16 +65,6 @@ interface FooterConfig {
   copyright: string;
 }
 
-interface SiteConfig {
-  title: string;
-  description: string;
-  navigation: Array<{
-    label: string;
-    link: string;
-  }>;
-  footer: FooterConfig;
-}
-
 interface RelatedContent {
   path: string;
   title: string;
@@ -76,14 +77,22 @@ interface RelatedContent {
 }
 
 export function getSiteConfig(): SiteConfig {
-  const configPath = path.join(process.cwd(), 'src/content/config/site.md');
-  const fileContent = fs.readFileSync(configPath, 'utf-8');
-  const { data } = matter(fileContent);
-  return data as SiteConfig;
+  const siteConfigPath = path.join(process.cwd(), 'src/content/config/site.md');
+  const fileContents = fs.readFileSync(siteConfigPath, 'utf8');
+  const { data } = matter(fileContents);
+  return siteConfigSchema.parse(data);
 }
 
 export function getContentMetadata(contentType: string, slug: string): ContentMetadata | null {
   try {
+    // Handle URL paths that use singular form
+    if (contentType === 'article') {
+      contentType = 'articles';
+    }
+    if (contentType === 'post') {
+      contentType = 'posts';
+    }
+    
     const contentPath = path.join(process.cwd(), 'src/content', contentType, `${slug}.md`);
     console.log(`[getContentMetadata] Reading file: ${contentPath}`);
     
@@ -108,7 +117,8 @@ export function getContentMetadata(contentType: string, slug: string): ContentMe
     
     return {
       data: schemaData,
-      content
+      content,
+      path: contentPath
     };
   } catch (error) {
     console.error(`[getContentMetadata] Error reading content metadata:`, error);
@@ -167,7 +177,10 @@ export function findRelatedContent(
 ): { posts: RelatedContent[], articles: RelatedContent[] } {
   try {
     // Get current post's metadata
-    const currentMeta = getContentMetadata(currentPath.startsWith('/post/') ? 'posts' : 'articles', currentPath.split('/').pop() as string);
+    const currentMeta = getContentMetadata(
+      currentPath.startsWith('/post/') ? 'posts' : 'articles',
+      currentPath.split('/').pop() as string
+    );
     if (!currentMeta) return { posts: [], articles: [] };
 
     const currentKeywords = new Set(currentMeta.data.keywords || []);
@@ -270,3 +283,5 @@ export async function getCTAConfig(): Promise<CTAConfig> {
 }
 
 export const getSiteWideCTA = getCTAConfig;
+
+export type { ContentMetadata };

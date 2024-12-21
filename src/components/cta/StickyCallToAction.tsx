@@ -5,6 +5,7 @@ import Link from 'next/link';
 import { ArrowRight, Download, Mail, ExternalLink, Gift, BookOpen } from 'lucide-react';
 import { CTAConfig } from './types';
 import { EmailCollectionForm } from './EmailCollectionForm';
+import { useTheme } from '@/hooks/useTheme';
 
 interface StickyCallToActionProps {
   config: CTAConfig;
@@ -24,6 +25,8 @@ export const StickyCallToAction: React.FC<StickyCallToActionProps> = ({
   config,
   className = ''
 }) => {
+  const { getColor } = useTheme();
+
   // Direct link CTA
   if (config.type === 'link' && config.href) {
     return (
@@ -37,12 +40,12 @@ export const StickyCallToAction: React.FC<StickyCallToActionProps> = ({
             <div>
               <Link 
                 href={config.href}
-                className="
+                className={`
                   px-4 py-2 rounded-md transition-all duration-300 
                   flex items-center justify-center gap-2
-                  bg-emerald-600 text-white hover:bg-emerald-700
+                  ${getColor('accent', 'dark')} text-white hover:opacity-90
                   w-full
-                "
+                `}
               >
                 {(() => {
                   const Icon = icons[config.icon ?? 'arrow'];
@@ -88,12 +91,12 @@ export const StickyCallToAction: React.FC<StickyCallToActionProps> = ({
           <div>
             <Link
               href={config.href || '#'}
-              className="
+              className={`
                 px-4 py-2 rounded-md transition-all duration-300 
                 flex items-center justify-center gap-2
-                bg-emerald-600 text-white hover:bg-emerald-700
+                ${getColor('accent', 'dark')} text-white hover:opacity-90
                 w-full
-              "
+              `}
             >
               {(() => {
                 const Icon = icons[config.icon ?? 'arrow'];
