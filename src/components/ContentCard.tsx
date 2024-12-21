@@ -4,7 +4,10 @@ import Link from 'next/link';
 interface ContentCardProps {
   title: string;
   description: string;
-  image?: string;
+  image?: {
+    url: string;
+    alt?: string;
+  };
   type: 'post' | 'topic' | 'article';
   slug: string;
 }
@@ -20,11 +23,11 @@ export function ContentCard({
   return (
     <Link href={href} className="group block">
       <div className="bg-slate-50 border border-slate-200 rounded-lg shadow-[0_8px_30px_-4px_rgba(0,0,0,0.08)] hover:shadow-[0_4px_20px_-2px_rgba(0,0,0,0.05)] transition-shadow">
-        {image && (
+        {image?.url && (
           <figure className="relative aspect-[16/9] rounded-t-lg overflow-hidden">
             <Image
-              src={image}
-              alt={image}
+              src={image.url}
+              alt={image.alt || title}
               fill
               className="object-cover transition-transform group-hover:scale-105"
             />

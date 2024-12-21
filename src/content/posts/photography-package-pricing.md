@@ -16,7 +16,7 @@ keywords: [
 ]
 image:
   url: "https://images.unsplash.com/photo-1450101499163-c8848c66ca85?auto=format&fit=crop&w=1200&q=80"
-  alt: "Professional photographer reviewing pricing packages"
+  alt: "Photography pricing packages displayed on a modern desk with a camera"
   credit: "Unsplash Photographer"
 links:
   topic: "/topic/photography-pricing-guide"

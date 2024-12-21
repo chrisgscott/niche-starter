@@ -7,7 +7,7 @@ parent_topic: "photography-business-basics"
 keywords: ["photography business license", "photographer licensing", "business permits", "photography legal requirements"]
 image:
   url: "https://images.unsplash.com/photo-1556155092-490a1ba16284"
-  alt: "Photographer reviewing business documents at desk"
+  alt: "Business license and legal documents with a camera in the background"
   credit: "Unsplash Photographer"
 links:
   topic: "/topics/photography-business-basics"

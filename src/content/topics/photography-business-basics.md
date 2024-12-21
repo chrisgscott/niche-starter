@@ -16,7 +16,7 @@ keywords: [
 ]
 image:
   url: "https://images.unsplash.com/photo-1452587925148-ce544e77e70d?auto=format&fit=crop&w=1200&q=80"
-  alt: "Professional photographer reviewing client photos on computer"
+  alt: "Professional photographer setting up camera equipment in a studio"
   credit: "Unsplash Photographer"
 links:
   posts: [
